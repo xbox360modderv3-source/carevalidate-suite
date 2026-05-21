@@ -156,8 +156,12 @@ fig.add_trace(go.Scatter(x=labels_hist, y=[m/1e3 for m in mrr_hist],
 fig.add_trace(go.Scatter(x=labels_proj, y=[m/1e3 for m in mrr_proj],
     name="Projected MRR", mode="lines+markers",
     line=dict(color=GREEN, width=2, dash="dot"), marker=dict(size=5)))
-fig.add_vline(x=months_hist, line_dash="dash", line_color=MUTED,
-              annotation_text="Today", annotation_font_color=MUTED)
+fig.add_shape(type="line", xref="x", yref="paper",
+              x0="Now", x1="Now", y0=0, y1=1,
+              line=dict(color=MUTED, dash="dash", width=1))
+fig.add_annotation(x="Now", yref="paper", y=1.05, text="Today",
+                   showarrow=False, font=dict(color=MUTED, size=11),
+                   xanchor="left")
 fig.update_layout(template="plotly_dark", paper_bgcolor=BG,
                   plot_bgcolor=CARD, yaxis_title="MRR ($K)",
                   height=300, margin=dict(l=0,r=0,t=10,b=0),
