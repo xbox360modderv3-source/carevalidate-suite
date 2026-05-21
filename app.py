@@ -7,7 +7,7 @@ import sys
 sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parent))
 
 import streamlit as st
-from carevalidate_shared.theme import GLOBAL_CSS, BG, CARD, BLUE, GREEN, YELLOW, RED, PURPLE, MUTED
+from carevalidate_shared.theme import GLOBAL_CSS, BG, CARD, BLUE, GREEN, YELLOW, RED, PURPLE, MUTED, sidebar_nav
 from carevalidate_shared.auth import check_auth, logout_button
 
 st.set_page_config(
@@ -18,6 +18,7 @@ st.set_page_config(
 st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
 check_auth()
 logout_button()
+sidebar_nav("")  # home page — no active key
 
 # ── Tool definitions ─────────────────────────────────────────────────────────
 TOOLS = [

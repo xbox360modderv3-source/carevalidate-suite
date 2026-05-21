@@ -64,6 +64,10 @@ html, body, [class*="css"] {
 header[data-testid="stHeader"] { background: transparent !important; height: 0 !important; }
 footer { visibility: hidden !important; }
 
+/* Hide Streamlit's auto-generated MPA sidebar nav — it uses <a href> that creates new sessions.
+   Our custom sidebar_nav() uses st.page_link which preserves WebSocket session + auth state. */
+[data-testid="stSidebarNav"] { display: none !important; }
+
 /* Sidebar */
 section[data-testid="stSidebar"] {
     background: linear-gradient(180deg, #0a0d16 0%, #07090f 100%) !important;
