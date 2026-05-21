@@ -320,8 +320,8 @@ with tab3:
         for i in range(50):
             ts_offset = timedelta(hours=int(rng.integers(0, 168)))
             ts        = now - ts_offset
-            user      = users[rng.integers(0, len(users))]
-            action    = actions[rng.integers(0, len(actions))]
+            user      = users[int(rng.integers(0, len(users)))]
+            action    = actions[int(rng.integers(0, len(actions)))]
             outcome   = outcomes[i]
             rows.append({
                 "Timestamp":     ts.strftime("%Y-%m-%d %H:%M:%S"),
