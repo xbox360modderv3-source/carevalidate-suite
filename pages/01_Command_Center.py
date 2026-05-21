@@ -527,3 +527,71 @@ for col, (icon, name, desc, page, color) in zip(cols, QUICK):
             unsafe_allow_html=True,
         )
         st.page_link(page, label="Open →", use_container_width=True)
+
+# ── Market Intelligence Watchlist ─────────────────────────────────────────────
+st.divider()
+section("Market Intelligence Watchlist", "🔭")
+st.markdown(
+    '<div style="font-size:12px;color:#475569;margin:-8px 0 14px 0;">'
+    'Public-source market signals that may affect pricing, growth, payer strategy, '
+    'product positioning, or finance planning. '
+    '<strong style="color:#64748b;">Synthetic/illustrative only — not sourced from proprietary or confidential databases.</strong>'
+    '</div>',
+    unsafe_allow_html=True,
+)
+
+_intel_rows = [
+    {
+        "Company": "Digital health navigation platform",
+        "Segment": "Care navigation",
+        "Recent Signal": "New payer partnership announced",
+        "Strategic Risk": "Competitive pressure in payer channel",
+        "Financial Impact": "Potential impact to payer pipeline",
+        "Recommended Action": "Compare ROI claims, update sales positioning",
+        "Source Type": "Public announcement",
+        "Date Checked": "May 2026",
+        "Confidence": "Medium",
+    },
+    {
+        "Company": "Virtual care platform",
+        "Segment": "Telehealth / chronic care",
+        "Recent Signal": "Expanded weight management offering",
+        "Strategic Risk": "GLP-1 patient acquisition competition",
+        "Financial Impact": "Potential CAC pressure",
+        "Recommended Action": "Monitor pricing and retention claims",
+        "Source Type": "Website / press release",
+        "Date Checked": "May 2026",
+        "Confidence": "Medium",
+    },
+    {
+        "Company": "Healthcare payments vendor",
+        "Segment": "Payments infrastructure",
+        "Recent Signal": "New settlement and reconciliation feature",
+        "Strategic Risk": "Faster payment ops positioning",
+        "Financial Impact": "Possible pressure on payment ops differentiation",
+        "Recommended Action": "Benchmark reconciliation workflow and exception handling",
+        "Source Type": "Product page",
+        "Date Checked": "May 2026",
+        "Confidence": "Low",
+    },
+]
+
+_intel_df = pd.DataFrame(_intel_rows)
+st.dataframe(_intel_df, use_container_width=True, hide_index=True)
+
+st.markdown(
+    '<div style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.18);'
+    'border-left:3px solid #3b82f6;border-radius:8px;padding:13px 16px;margin-top:12px;">'
+    '<div style="font-size:10px;font-weight:700;color:#3b82f6;letter-spacing:.08em;margin-bottom:5px;">FINANCE USE CASE</div>'
+    '<div style="font-size:12px;color:#94a3b8;line-height:1.6;">'
+    'This view is designed to help leadership connect market signals to financial planning, '
+    'pricing pressure, sales positioning, payer strategy, and product investment priorities.'
+    '</div></div>',
+    unsafe_allow_html=True,
+)
+st.markdown(
+    '<div style="font-size:10px;color:#334155;margin-top:8px;padding-bottom:16px;">'
+    'Synthetic data only · illustrative prototype · not sourced from proprietary databases · signals for planning purposes only'
+    '</div>',
+    unsafe_allow_html=True,
+)
