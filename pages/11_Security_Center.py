@@ -318,7 +318,7 @@ with tab3:
         now = datetime.now()
         rows = []
         for i in range(50):
-            ts_offset = timedelta(hours=rng.integers(0, 168))
+            ts_offset = timedelta(hours=int(rng.integers(0, 168)))
             ts        = now - ts_offset
             user      = users[rng.integers(0, len(users))]
             action    = actions[rng.integers(0, len(actions))]
