@@ -18,6 +18,16 @@ from carevalidate_shared.theme import (
 )
 from carevalidate_shared.auth import check_auth, logout_button
 
+def _hex_to_rgba(hex_color: str, alpha: float = 0.06) -> str | None:
+    try:
+        h = hex_color.lstrip("#")
+        if len(h) != 6:
+            return None
+        r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+        return f"rgba({r},{g},{b},{alpha})"
+    except Exception:
+        return None
+
 st.set_page_config(page_title="CareValidate GLP-1 Scenario Model", layout="wide", page_icon="💊")
 st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
 check_auth()
@@ -210,7 +220,7 @@ for name, df in dfs.items():
         x=df["Month"], y=df["Gross_Margin"]*100,
         name=name.split(":")[0], mode="lines",
         line=dict(color=SCENARIOS[name]["color"], width=2),
-        fill="tozeroy", fillcolor=("rgba({},{},{},0.06)".format(int(SCENARIOS[name]["color"][1:3],16),int(SCENARIOS[name]["color"][3:5],16),int(SCENARIOS[name]["color"][5:7],16))) if len(SCENARIOS[name]["color"]) == 7 else None,
+        fill="tozeroy", fillcolor=_hex_to_rgba(SCENARIOS[name]["color"]),
     ))
 fig3.add_hline(y=40, line_dash="dot", line_color=MUTED,
                annotation_text="40% GM Target", annotation_position="right",
