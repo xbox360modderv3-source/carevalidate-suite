@@ -210,7 +210,7 @@ for name, df in dfs.items():
         x=df["Month"], y=df["Gross_Margin"]*100,
         name=name.split(":")[0], mode="lines",
         line=dict(color=SCENARIOS[name]["color"], width=2),
-        fill="tozeroy", fillcolor=SCENARIOS[name]["color"].replace("#", "rgba(").replace(")", ",0.06)") if len(SCENARIOS[name]["color"]) == 7 else None,
+        fill="tozeroy", fillcolor=("rgba({},{},{},0.06)".format(int(SCENARIOS[name]["color"][1:3],16),int(SCENARIOS[name]["color"][3:5],16),int(SCENARIOS[name]["color"][5:7],16))) if len(SCENARIOS[name]["color"]) == 7 else None,
     ))
 fig3.add_hline(y=40, line_dash="dot", line_color=MUTED,
                annotation_text="40% GM Target", annotation_position="right",
