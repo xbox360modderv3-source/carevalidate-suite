@@ -92,6 +92,89 @@ arr           = mrr_current * 12
 avg_employer_roi   = 4.1
 pipeline_employers = 28
 
+# ── Start Here — 3-Minute CFO Review ─────────────────────────────────────────
+_DEMO_CARDS = [
+    {
+        "n": "1",
+        "icon": "📝",
+        "title": "CFO Morning Brief",
+        "desc": "Executive commentary, top risks, action queue, and cash runway — everything a CFO reads Monday morning.",
+        "href": "/CFO_Suite",
+        "color": BLUE,
+        "bg": "rgba(59,130,246,0.10)",
+        "border": "rgba(59,130,246,0.25)",
+    },
+    {
+        "n": "2",
+        "icon": "⚖",
+        "title": "Reconciliation Engine",
+        "desc": "Auto-match rate, exception queue, SLA aging, and duplicate detection across payment transactions.",
+        "href": "/Reconciliation",
+        "color": GREEN,
+        "bg": "rgba(16,185,129,0.10)",
+        "border": "rgba(16,185,129,0.25)",
+    },
+    {
+        "n": "3",
+        "icon": "💳",
+        "title": "Payer Revenue Cycle",
+        "desc": "Claims volume, denial rate by payer, DSO, A/R aging buckets, and net collection rate scorecard.",
+        "href": "/Payer_Revenue_Cycle",
+        "color": PURPLE,
+        "bg": "rgba(139,92,246,0.10)",
+        "border": "rgba(139,92,246,0.25)",
+    },
+    {
+        "n": "4",
+        "icon": "📉",
+        "title": "Scenario Stress Test",
+        "desc": "Move sliders — denial rate, CAC, retention, pharmacy cost, settlement delay — see live EBITDA and runway impact.",
+        "href": "/CFO_Suite",
+        "note": "Open CFO Suite → Stress Test tab",
+        "color": YELLOW,
+        "bg": "rgba(245,158,11,0.10)",
+        "border": "rgba(245,158,11,0.25)",
+    },
+]
+
+st.markdown(
+    '<div style="background:linear-gradient(135deg,rgba(15,23,42,0.95) 0%,rgba(17,24,39,0.98) 100%);'
+    'border:1px solid rgba(59,130,246,0.22);border-radius:14px;padding:22px 24px;margin-bottom:24px;">'
+    '<div style="font-size:10px;font-weight:700;color:#3b82f6;letter-spacing:.1em;margin-bottom:4px;">START HERE</div>'
+    '<div style="font-size:17px;font-weight:800;color:#f1f5f9;margin-bottom:4px;">3-Minute CFO Review</div>'
+    '<div style="font-size:12px;color:#475569;margin-bottom:18px;">'
+    'Click through in order. Each section is self-contained. '
+    'Synthetic data only — no PHI, no real company or patient data.'
+    '</div>'
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">',
+    unsafe_allow_html=True,
+)
+for _card in _DEMO_CARDS:
+    _note_html = (
+        f'<div style="font-size:10px;color:{_card["color"]};margin-top:6px;font-weight:600;">'
+        f'↳ {_card["note"]}</div>'
+    ) if _card.get("note") else ""
+    st.markdown(
+        f'<a href="{_card["href"]}" target="_self" style="text-decoration:none;">'
+        f'<div style="background:{_card["bg"]};border:1px solid {_card["border"]};'
+        f'border-radius:10px;padding:14px 16px;cursor:pointer;'
+        f'transition:transform 0.15s ease;height:100%;">'
+        f'<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">'
+        f'<span style="width:26px;height:26px;border-radius:50%;background:{_card["color"]};'
+        f'color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;'
+        f'justify-content:center;flex-shrink:0;">{_card["n"]}</span>'
+        f'<span style="font-size:15px;">{_card["icon"]}</span>'
+        f'<span style="font-size:13px;font-weight:700;color:#f1f5f9;">{_card["title"]}</span>'
+        f'</div>'
+        f'<div style="font-size:12px;color:#94a3b8;line-height:1.55;padding-left:36px;">'
+        f'{_card["desc"]}{_note_html}</div>'
+        f'</div></a>',
+        unsafe_allow_html=True,
+    )
+st.markdown("</div></div>", unsafe_allow_html=True)
+
+st.markdown("<div style='height:4px'></div>", unsafe_allow_html=True)
+
 # ── Critical alerts ───────────────────────────────────────────────────────────
 alert(
     f"<strong>{compliance_flags} high-priority compliance flags</strong> detected — "
