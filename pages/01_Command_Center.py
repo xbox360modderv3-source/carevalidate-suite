@@ -15,6 +15,7 @@ from carevalidate_shared.theme import (
     BG, CARD, BLUE, GREEN, YELLOW, RED, PURPLE, TEAL, MUTED,
 )
 from carevalidate_shared.auth import check_auth, logout_button
+from carevalidate_shared.commentary import build_commentary, render_commentary_ui
 import datetime as _dt
 
 st.set_page_config(page_title="CareValidate Command Center", layout="wide", page_icon="⌂")
@@ -99,6 +100,35 @@ alert(
     f"${revenue_at_risk/1e3:.0f}K revenue at risk (90-day window).",
     level="warning"
 )
+
+# ── Executive Finance Commentary ──────────────────────────────────────────────
+section("Executive Finance Commentary", "")
+
+_cmd_metrics = {
+    "mrr_current":        mrr_current,
+    "mrr_prev":           1_050_000,
+    "gross_margin":       gross_margin,
+    "gross_margin_prev":  gross_margin - 0.014,
+    "cash_runway_mo":     runway_months,
+    "cash_on_hand_m":     8.4,
+    "denial_rate":        0.082,
+    "dso_days":           27,
+    "nrr":                nrr,
+    "churn_rate_mo":      0.028,
+    "ltv_cac":            ltv_cac_blended,
+    "payback_months":     payback_months,
+    "compliance_risk_k":  compliance_risk_mo / 1_000,
+    "high_risk_patients": high_risk,
+    "revenue_at_risk_k":  revenue_at_risk / 1_000,
+    "ar_overdue_k":       76.0,
+    "at_risk_arr_k":      156.5,
+    "report_month":       _today.strftime("%B %Y"),
+}
+_cmd_paras, _cmd_action_df, _cmd_dl_lines = build_commentary(_cmd_metrics)
+render_commentary_ui(_cmd_paras, _cmd_action_df, _cmd_dl_lines,
+                     report_month=_today.strftime("%B %Y"))
+
+st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
 
 # ── Revenue strip ─────────────────────────────────────────────────────────────
 section("Revenue & Growth", "📈")

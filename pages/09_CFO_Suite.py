@@ -16,6 +16,7 @@ from carevalidate_shared.theme import (
     BG, CARD, BLUE, GREEN, YELLOW, RED, PURPLE, TEAL, TEXT, MUTED,
 )
 from carevalidate_shared.auth import check_auth, logout_button
+from carevalidate_shared.commentary import build_commentary, render_commentary_ui
 
 st.set_page_config(page_title="CareValidate CFO Suite", layout="wide", page_icon="⚙")
 st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
@@ -42,12 +43,40 @@ NRR          = 1.18
 LTV_CAC      = 4.2
 TODAY        = date.today()
 
-tab1, tab2, tab3, tab4 = st.tabs([
+tab0, tab1, tab2, tab3, tab4 = st.tabs([
+    "📝 Executive Summary",
     "📋 Monthly CFO Pack",
     "💵 13-Week Cash Flow",
     "🤝 Contract Renewal Pipeline",
     "🚨 Alert Engine",
 ])
+
+# ══════════════════════════════════════════════════════════════════════════════
+# TAB 0 — EXECUTIVE FINANCE COMMENTARY
+# ══════════════════════════════════════════════════════════════════════════════
+with tab0:
+    _exec_metrics = {
+        "mrr_current":        MRR,
+        "mrr_prev":           1_050_000,
+        "gross_margin":       GM_RATE,
+        "gross_margin_prev":  GM_RATE - 0.014,
+        "cash_runway_mo":     RUNWAY_MO,
+        "cash_on_hand_m":     8.4,
+        "denial_rate":        0.082,
+        "dso_days":           27,
+        "nrr":                NRR,
+        "churn_rate_mo":      CHURN_MO,
+        "ltv_cac":            LTV_CAC,
+        "payback_months":     14,
+        "compliance_risk_k":  COMPLIANCE_RISK_MO / 1_000,
+        "high_risk_patients": HIGH_RISK_PATIENTS,
+        "revenue_at_risk_k":  HIGH_RISK_PATIENTS * 285 * 3 / 1_000,
+        "ar_overdue_k":       76.0,
+        "at_risk_arr_k":      156.5,
+        "report_month":       "May 2026",
+    }
+    _paras, _action_df, _dl_lines = build_commentary(_exec_metrics)
+    render_commentary_ui(_paras, _action_df, _dl_lines, report_month="May 2026")
 
 # ══════════════════════════════════════════════════════════════════════════════
 # TAB 1 — MONTHLY CFO PACK GENERATOR
