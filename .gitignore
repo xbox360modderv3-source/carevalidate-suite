@@ -2,4 +2,6 @@ __pycache__/
 *.pyc
 *.pyo
 .env
+.DS_Store
 carevalidate_shared/__pycache__/
+.streamlit/secrets.toml

@@ -2,16 +2,39 @@
 CareValidate Shared Authentication
 Simple session-based login gate — no external packages required.
 Production: replace with SSO/SAML via Streamlit Community Cloud or Okta.
+
+Credential setup (in priority order):
+  1. Streamlit Cloud: add [credentials] table to .streamlit/secrets.toml
+       [credentials]
+       alice = "<sha256 hex of password>"
+       bob   = "<sha256 hex of password>"
+  2. Environment variables:
+       CV_DEMO_USERNAME=demo
+       CV_DEMO_PASSWORD_HASH=<sha256 hex>
+  3. Fallback: demo / Demo1234! (prototype only — change before sharing)
 """
+import os
 import hashlib
 import streamlit as st
 
-# Credentials — change before sharing externally
-_USERS = {
-    "david":   hashlib.sha256(b"ReferWell2026!").hexdigest(),
-    "connor":  hashlib.sha256(b"CareValidate2026!").hexdigest(),
-    "demo":    hashlib.sha256(b"Demo1234!").hexdigest(),
-}
+
+def _load_users() -> dict:
+    """Return {username: sha256_hex} from secrets or env vars."""
+    # 1 — Streamlit secrets (Streamlit Cloud / local secrets.toml)
+    try:
+        creds = dict(st.secrets.get("credentials", {}))
+        if creds:
+            return creds
+    except Exception:
+        pass
+    # 2 — Single-user env var pair
+    env_user = os.environ.get("CV_DEMO_USERNAME", "").strip()
+    env_hash = os.environ.get("CV_DEMO_PASSWORD_HASH", "").strip()
+    if env_user and env_hash:
+        return {env_user: env_hash}
+    # 3 — Prototype fallback (demo account only)
+    return {"demo": hashlib.sha256(b"Demo1234!").hexdigest()}
+
 
 _LOGIN_CSS = """
 <style>
@@ -40,18 +63,19 @@ _LOGIN_CSS = """
     font-size: 10px;
     padding: 2px 8px;
     border-radius: 20px;
-    border: 1px solid rgba(16,185,129,0.35);
-    color: #10b981;
-    background: rgba(16,185,129,0.08);
+    border: 1px solid rgba(59,130,246,0.35);
+    color: #60a5fa;
+    background: rgba(59,130,246,0.08);
     margin-bottom: 24px;
 }
 </style>
 """
 
+
 def check_auth() -> bool:
     """
-    Call at the top of each app (after set_page_config).
-    Returns True if authenticated. If False, renders login form and stops execution.
+    Call at the top of each page (after set_page_config).
+    Returns True if authenticated. If not, renders login form and stops execution.
     """
     if st.session_state.get("_cv_authenticated"):
         return True
@@ -64,7 +88,7 @@ def check_auth() -> bool:
             '<div class="cv-login-wrap">'
             '<div class="cv-login-logo"><span>Care</span>Validate</div>'
             '<div class="cv-login-sub">Finance Suite · Restricted Access</div>'
-            '<div class="cv-login-badge">● HIPAA-Compliant · Synthetic Data Only</div>',
+            '<div class="cv-login-badge">Synthetic Data Only · No PHI · Prototype</div>',
             unsafe_allow_html=True,
         )
 
@@ -72,8 +96,9 @@ def check_auth() -> bool:
         password = st.text_input("Password", type="password", placeholder="••••••••", key="_cv_pass")
 
         if st.button("Sign In", use_container_width=True, type="primary"):
+            users = _load_users()
             hashed = hashlib.sha256(password.encode()).hexdigest()
-            if _USERS.get(username.strip().lower()) == hashed:
+            if users.get(username.strip().lower()) == hashed:
                 st.session_state["_cv_authenticated"] = True
                 st.session_state["_cv_username"] = username.strip().lower()
                 st.rerun()
@@ -82,7 +107,7 @@ def check_auth() -> bool:
 
         st.markdown(
             '<div style="margin-top:20px;font-size:11px;color:#334155;text-align:center;">'
-            'No PHI is processed · All data is synthetic<br>'
+            'Synthetic data only · No PHI processed<br>'
             'Contact <a href="mailto:crsavenas@crimson.ua.edu" style="color:#3b82f6;">Connor Savenas</a> for access'
             '</div></div>',
             unsafe_allow_html=True,

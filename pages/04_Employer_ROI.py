@@ -16,10 +16,13 @@ from carevalidate_shared.theme import (
     GLOBAL_CSS, render_header, kpi_card, kpi_row, section, alert, sidebar_nav,
     BG, CARD, BLUE, GREEN, YELLOW, RED, PURPLE, MUTED,
 )
+from carevalidate_shared.auth import check_auth, logout_button
 
 st.set_page_config(page_title="CareValidate Employer ROI", layout="wide", page_icon="🏢")
 st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
+check_auth()
 sidebar_nav("roi")
+logout_button()
 
 render_header(
     "Employer ROI Calculator",

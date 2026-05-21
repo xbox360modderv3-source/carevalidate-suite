@@ -1,8 +1,8 @@
 """
-CareValidate HIPAA Security & Compliance Center
-RBAC matrix, immutable audit trail, BAA vendor tracker, breach cost model,
-de-identification pipeline, HITRUST control status.
-Port 8511  |  Synthetic/illustrative data only — no real PHI or credentials
+CareValidate Security & Compliance Readiness Center
+RBAC matrix, audit trail, BAA vendor tracker, breach cost model,
+de-identification pipeline, HITRUST control reference.
+Prototype  |  Synthetic/illustrative data only — no real PHI or credentials
 """
 import sys
 sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parent.parent))
@@ -19,24 +19,24 @@ from carevalidate_shared.theme import (
 )
 from carevalidate_shared.auth import check_auth, logout_button
 
-st.set_page_config(page_title="HIPAA Security Center", layout="wide", page_icon="🔒")
+st.set_page_config(page_title="Security & Compliance Readiness Center", layout="wide", page_icon="🔒")
 st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
 check_auth()
 sidebar_nav("sec")
 logout_button()
 
 render_header(
-    "HIPAA Security & Compliance Center",
-    "RBAC · Audit trail · BAA tracker · Breach cost model · HITRUST controls · De-identification pipeline",
-    badge="Security",
+    "Security & Compliance Readiness Center",
+    "RBAC · Audit trail · BAA tracker · Breach cost model · HITRUST control reference · De-identification pipeline",
+    badge="Prototype View",
     badge_color="red",
 )
 
 alert(
-    "<strong>Illustrative compliance posture dashboard.</strong> All data is synthetic. "
+    "<strong>Prototype compliance posture dashboard.</strong> All data is synthetic. "
     "No real credentials, PHI, employee records, or audit events are used or stored. "
-    "This dashboard demonstrates the architecture and controls that a HIPAA-compliant "
-    "production system would implement. Requires legal and security review before production deployment.",
+    "This dashboard demonstrates controls that a production healthcare analytics platform may need. "
+    "It does not certify compliance. Production deployment requires legal, security, and compliance review.",
     level="warning",
 )
 

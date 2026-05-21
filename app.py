@@ -105,7 +105,7 @@ TOOLS = [
         "icon": "⚙",
         "name": "CFO Automation Suite",
         "tag": "CFO Tooling",
-        "desc": "Monthly pack generator, 13-week cash flow forecast, MLR spend qualification model, and real-time alert engine.",
+        "desc": "Monthly pack generator, 13-week cash flow forecast, MLR finance impact scenario model, and real-time alert engine.",
         "slug": "CFO_Suite",
         "accent": "#f59e0b",
         "tag_bg": "rgba(245,158,11,0.10)",
@@ -123,9 +123,9 @@ TOOLS = [
     },
     {
         "icon": "🔒",
-        "name": "HIPAA Security Center",
+        "name": "Security & Compliance Readiness Center",
         "tag": "Compliance & Security",
-        "desc": "RBAC access matrix, immutable audit trail, BAA vendor tracker, breach cost model, and HITRUST control status — production-ready compliance posture.",
+        "desc": "RBAC access matrix, audit trail, BAA vendor tracker, breach cost model, and HITRUST control reference — illustrative prototype compliance posture.",
         "slug": "Security_Center",
         "accent": "#ef4444",
         "tag_bg": "rgba(239,68,68,0.10)",
@@ -287,12 +287,12 @@ for col, (src, desc) in zip(cols, sources):
 # ── Compliance standards strip ───────────────────────────────────────────────
 st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
 standards = [
-    ("#10b981", "HIPAA Safe Harbor", "§164.514(b) de-identified"),
-    ("#3b82f6", "HITRUST CSF r2",    "19 control domains"),
+    ("#10b981", "Synthetic Data Only", "No PHI processed"),
+    ("#3b82f6", "HITRUST CSF Ref",    "19 control domains"),
     ("#8b5cf6", "HEDIS/NCQA 2026",   "Care gap measures"),
     ("#06b6d4", "HL7 FHIR R4",       "ONC interoperability"),
     ("#f59e0b", "CMS MA Stars",      "Medicare Advantage quality"),
-    ("#94a3b8", "No PHI Processed",  "Synthetic data only"),
+    ("#94a3b8", "Prototype",         "Not for production use"),
 ]
 cols = st.columns(6, gap="small")
 for col, (color, title, sub) in zip(cols, standards):

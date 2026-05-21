@@ -15,10 +15,13 @@ from carevalidate_shared.theme import (
     GLOBAL_CSS, render_header, kpi_card, kpi_row, section, alert, sidebar_nav,
     BG, CARD, BLUE, GREEN, YELLOW, RED, PURPLE, TEAL, MUTED,
 )
+from carevalidate_shared.auth import check_auth, logout_button
 
 st.set_page_config(page_title="Navigator Workforce Intelligence", layout="wide", page_icon="🧭")
 st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
+check_auth()
 sidebar_nav("nav")
+logout_button()
 
 render_header(
     "Care Navigator Workforce Intelligence",
@@ -370,7 +373,7 @@ st.code(brief, language=None)
 # ── Footer ────────────────────────────────────────────────────────────────────
 st.markdown(
     '<div style="text-align:center;padding:28px 0 16px 0;color:#334155;font-size:11px;">'
-    'HIPAA Safe Harbor · No PHI · Synthetic data only · NCQA HEDIS 2026 benchmarks · '
+    'Synthetic data only · No PHI · Prototype · NCQA HEDIS 2026 benchmarks · '
     'Milliman healthcare cost data · ReferWell published outcomes</div>',
     unsafe_allow_html=True
 )

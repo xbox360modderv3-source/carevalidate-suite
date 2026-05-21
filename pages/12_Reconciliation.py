@@ -1,6 +1,6 @@
 """
 CareValidate — Intelligent Payment Reconciliation Engine
-Port 8512 | Synthetic data only | HIPAA Safe Harbor
+Synthetic data only · No PHI · Prototype
 """
 
 import sys
@@ -17,6 +17,7 @@ from carevalidate_shared.theme import (
     GLOBAL_CSS, render_header, kpi_card, kpi_row, section, alert, sidebar_nav,
     BG, CARD, BLUE, GREEN, YELLOW, RED, PURPLE, TEAL, MUTED,
 )
+from carevalidate_shared.auth import check_auth, logout_button
 
 # ── Page config (must be first Streamlit call) ──────────────────────────────
 st.set_page_config(
@@ -26,7 +27,9 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
+check_auth()
 sidebar_nav("recon")
+logout_button()
 
 # ── Plotly base layout ───────────────────────────────────────────────────────
 _PLOT_BASE = dict(
@@ -680,7 +683,7 @@ with tab4:
         f"TOTAL FINANCIAL EXPOSURE (HIGH priority): {fmt_dollar_full(total_exposure)}",
         f"Items shown: {min(20, len(high_exc))} of {len(high_exc)} HIGH exceptions",
         "",
-        "HIPAA Safe Harbor · Synthetic payment data only · No real financial records or PHI",
+        "Synthetic payment data only · No PHI · No real financial records · Prototype",
         "Ponemon 2025 · IQVIA pharmacy benchmarks",
     ]
     st.code("\n".join(lines), language=None)
@@ -804,7 +807,7 @@ with tab5:
 st.markdown(
     '<div style="margin-top:48px;padding:16px 0 8px 0;border-top:1px solid rgba(255,255,255,0.05);'
     'text-align:center;font-size:11px;color:#334155;line-height:1.8;">'
-    'HIPAA Safe Harbor · Synthetic payment data only · No real financial records or PHI · '
+    'Synthetic payment data only · No PHI · No real financial records · Prototype · '
     'Ponemon 2025 · IQVIA pharmacy benchmarks'
     '</div>',
     unsafe_allow_html=True,

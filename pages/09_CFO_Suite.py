@@ -15,10 +15,13 @@ from carevalidate_shared.theme import (
     GLOBAL_CSS, render_header, kpi_card, kpi_row, section, alert, sidebar_nav,
     BG, CARD, BLUE, GREEN, YELLOW, RED, PURPLE, TEAL, TEXT, MUTED,
 )
+from carevalidate_shared.auth import check_auth, logout_button
 
 st.set_page_config(page_title="CareValidate CFO Suite", layout="wide", page_icon="⚙")
 st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
+check_auth()
 sidebar_nav("cfo")
+logout_button()
 
 render_header(
     "CFO Automation Suite",
@@ -568,14 +571,16 @@ with tab4:
 
 st.divider()
 
-# ── MLR Spend Qualification Model ─────────────────────────────────────────────
-section("MLR Spend Qualification Model — Care Navigation as Clinical Spend", "⚖️")
+# ── MLR Finance Impact Model ───────────────────────────────────────────────────
+section("MLR Finance Impact Model — Care Navigation Spend Illustration", "⚖️")
 st.markdown(
     '<div style="font-size:12px;color:#475569;margin:-8px 0 14px 0;">'
-    'Under ACA §2718, health plans must spend 80–85% of premium revenue on medical care (MLR). '
-    'Care navigation fees that directly improve clinical outcomes qualify as MLR spend — not administrative cost. '
-    'This model shows the dual benefit: MLR compliance AND Stars bonus uplift. '
-    'Source: CMS MLR final rule 45 CFR §158; AHIP 2024 MLR reporting guidance.</div>',
+    '<strong>Illustrative model only.</strong> Under ACA §2718, health plans are subject to MLR requirements. '
+    'Certain care navigation or quality improvement activities may be treated differently for MLR purposes '
+    'depending on plan structure, documentation, and regulatory review. '
+    'This dashboard is a finance scenario tool, not a legal conclusion. '
+    'MLR treatment should be confirmed with qualified legal and compliance counsel. '
+    'Source assumptions: CMS MLR guidance, AHIP 2024 MLR reporting benchmarks.</div>',
     unsafe_allow_html=True,
 )
 
@@ -654,8 +659,8 @@ alert(
     f"<strong>${_rebate_avoided/1e3:.0f}K in MLR rebates avoided</strong>, "
     f"and an estimated Stars bonus uplift — "
     f"for a combined net value of <strong>${net_val/1e3:.0f}K</strong>. "
-    f"Because care navigation fees qualify as MLR spend under 45 CFR §158, "
-    f"they improve clinical performance AND financial compliance simultaneously. "
-    f"Source: CMS MLR final rule, ReferWell published outcomes, CMS MA Stars 2026.",
+    f"MLR treatment may vary depending on plan structure and regulatory review. "
+    f"This model is illustrative and based on public benchmark assumptions. "
+    f"Source assumptions: CMS MLR guidance, ReferWell published outcomes, CMS MA Stars 2026.",
     level="success" if net_val > 0 else "info",
 )
