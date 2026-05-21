@@ -38,21 +38,36 @@ def _load_users() -> dict:
 
 _LOGIN_CSS = """
 <style>
+@keyframes login-card-glow {
+    0%, 100% { box-shadow: 0 0 0 1px rgba(59,130,246,0.15), 0 8px 40px rgba(0,0,0,0.6), 0 0 60px rgba(59,130,246,0.07); }
+    50%       { box-shadow: 0 0 0 1px rgba(59,130,246,0.28), 0 8px 40px rgba(0,0,0,0.6), 0 0 80px rgba(59,130,246,0.13); }
+}
+.cv-login-outer {
+    position: relative;
+    background: radial-gradient(ellipse at 60% 0%, rgba(59,130,246,0.09) 0%, transparent 70%),
+                radial-gradient(ellipse at 20% 80%, rgba(139,92,246,0.06) 0%, transparent 60%);
+    padding-top: 60px;
+    padding-bottom: 60px;
+}
 .cv-login-wrap {
     max-width: 420px;
-    margin: 80px auto 0;
+    margin: 0 auto;
     background: #0d1117;
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 16px;
-    padding: 40px 36px 32px;
+    border: 1px solid rgba(59,130,246,0.18);
+    border-radius: 18px;
+    padding: 44px 38px 36px;
+    animation: login-card-glow 4s ease-in-out infinite;
 }
 .cv-login-logo {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 800;
     letter-spacing: -0.5px;
     margin-bottom: 4px;
 }
-.cv-login-logo span { color: #3b82f6; }
+.cv-login-logo span {
+    color: #3b82f6;
+    text-shadow: 0 0 20px rgba(59,130,246,0.5);
+}
 .cv-login-sub {
     font-size: 12px;
     color: #475569;
@@ -61,12 +76,13 @@ _LOGIN_CSS = """
 .cv-login-badge {
     display: inline-block;
     font-size: 10px;
-    padding: 2px 8px;
+    padding: 3px 10px;
     border-radius: 20px;
     border: 1px solid rgba(59,130,246,0.35);
     color: #60a5fa;
     background: rgba(59,130,246,0.08);
-    margin-bottom: 24px;
+    margin-bottom: 28px;
+    letter-spacing: 0.3px;
 }
 </style>
 """
@@ -85,6 +101,7 @@ def check_auth() -> bool:
     col_l, col_m, col_r = st.columns([1, 2, 1])
     with col_m:
         st.markdown(
+            '<div class="cv-login-outer">'
             '<div class="cv-login-wrap">'
             '<div class="cv-login-logo"><span>Care</span>Validate</div>'
             '<div class="cv-login-sub">Finance Suite · Restricted Access</div>'
@@ -95,7 +112,7 @@ def check_auth() -> bool:
         username = st.text_input("Username", placeholder="your username", key="_cv_user")
         password = st.text_input("Password", type="password", placeholder="••••••••", key="_cv_pass")
 
-        if st.button("Sign In", use_container_width=True, type="primary"):
+        if st.button("Sign In →", use_container_width=True, type="primary"):
             users = _load_users()
             hashed = hashlib.sha256(password.encode()).hexdigest()
             if users.get(username.strip().lower()) == hashed:
@@ -106,10 +123,10 @@ def check_auth() -> bool:
                 st.error("Invalid username or password.")
 
         st.markdown(
-            '<div style="margin-top:20px;font-size:11px;color:#334155;text-align:center;">'
+            '<div style="margin-top:22px;font-size:11px;color:#334155;text-align:center;line-height:1.8;">'
             'Synthetic data only · No PHI processed<br>'
-            'Contact <a href="mailto:crsavenas@crimson.ua.edu" style="color:#3b82f6;">Connor Savenas</a> for access'
-            '</div></div>',
+            'Contact <a href="mailto:crsavenas@crimson.ua.edu" style="color:#3b82f6;text-decoration:none;">Connor Savenas</a> for access'
+            '</div></div></div>',
             unsafe_allow_html=True,
         )
 

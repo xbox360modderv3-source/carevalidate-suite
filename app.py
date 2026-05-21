@@ -145,18 +145,20 @@ TOOLS = [
 
 # ── Navigation bar ───────────────────────────────────────────────────────────
 st.markdown(
-    '<div style="background:linear-gradient(180deg,#0b0f1e 0%,#080b14 100%);'
-    'border-bottom:1px solid rgba(255,255,255,0.07);'
+    '<div style="background:linear-gradient(180deg,#0b0f1e 0%,#080b14 80%,#07090f 100%);'
+    'border-bottom:1px solid rgba(59,130,246,0.18);'
+    'box-shadow:0 1px 24px rgba(59,130,246,0.06);'
     'padding:14px 28px;margin:-1rem -1rem 0 -1rem;'
     'display:flex;align-items:center;justify-content:space-between;">'
-    '<div style="font-size:15px;font-weight:800;color:#3b82f6;letter-spacing:-0.3px;">'
-    'Care<span style="color:#f1f5f9;">Validate</span></div>'
+    '<div style="font-size:16px;font-weight:800;letter-spacing:-0.3px;">'
+    '<span style="color:#3b82f6;text-shadow:0 0 18px rgba(59,130,246,0.5);">Care</span>'
+    '<span style="color:#f1f5f9;">Validate</span></div>'
     '<div style="display:flex;align-items:center;gap:8px;">'
-    '<span style="display:inline-flex;align-items:center;gap:5px;background:rgba(16,185,129,0.10);'
+    '<span style="display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,0.10);'
     'border:1px solid rgba(16,185,129,0.25);color:#10b981;font-size:10px;font-weight:700;'
-    'padding:3px 10px;border-radius:20px;letter-spacing:0.5px;">'
-    '<span style="width:5px;height:5px;border-radius:50%;background:#10b981;'
-    'display:inline-block;box-shadow:0 0 6px #10b981;"></span>ALL SYSTEMS LIVE</span>'
+    'padding:4px 12px;border-radius:20px;letter-spacing:0.5px;">'
+    '<span class="cv-pulse-dot" style="width:5px;height:5px;border-radius:50%;background:#10b981;'
+    'display:inline-block;"></span>ALL SYSTEMS LIVE</span>'
     '<span style="font-size:11px;color:#334155;font-family:monospace;'
     'background:#0d1117;padding:3px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);">'
     'Synthetic Data Only</span>'
@@ -166,41 +168,46 @@ st.markdown(
 
 # ── Hero ─────────────────────────────────────────────────────────────────────
 st.markdown(
-    '<div style="text-align:center;padding:56px 24px 48px 24px;">'
+    '<div style="position:relative;text-align:center;padding:64px 24px 52px 24px;overflow:hidden;">'
+    '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);'
+    'width:600px;height:320px;pointer-events:none;z-index:0;'
+    'background:radial-gradient(ellipse at center,rgba(59,130,246,0.09) 0%,rgba(139,92,246,0.05) 40%,transparent 70%);'
+    'filter:blur(2px);"></div>'
+    '<div style="position:relative;z-index:1;">'
     '<div style="display:inline-flex;align-items:center;gap:6px;'
-    'background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.18);'
-    'color:#3b82f6;font-size:11px;font-weight:700;padding:4px 14px;border-radius:20px;'
-    'letter-spacing:0.8px;text-transform:uppercase;margin-bottom:20px;">'
+    'background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.22);'
+    'color:#3b82f6;font-size:11px;font-weight:700;padding:5px 16px;border-radius:20px;'
+    'letter-spacing:0.8px;text-transform:uppercase;margin-bottom:24px;">'
     'Finance Suite · 12 Dashboards</div>'
-    '<div style="font-size:48px;font-weight:800;letter-spacing:-2px;color:#f8fafc;'
-    'line-height:1;margin-bottom:16px;">'
+    '<div style="font-size:52px;font-weight:800;letter-spacing:-2.5px;color:#f8fafc;'
+    'line-height:1.05;margin-bottom:18px;">'
     'Financial Intelligence<br>'
-    '<span style="background:linear-gradient(135deg,#3b82f6 0%,#8b5cf6 100%);'
-    '-webkit-background-clip:text;-webkit-text-fill-color:transparent;'
-    'background-clip:text;">for Digital Health</span></div>'
-    '<div style="font-size:16px;color:#64748b;max-width:600px;margin:0 auto;line-height:1.65;">'
+    '<span class="cv-hero-gradient">for Digital Health</span></div>'
+    '<div style="font-size:17px;color:#64748b;max-width:620px;margin:0 auto;line-height:1.7;font-weight:400;">'
     'CFO-grade modeling for GLP-1 revenue scenarios, care navigation ROI, payer PMPM compliance, '
     'member retention, unit economics, and Series A readiness — '
     'calibrated to HEDIS, IQVIA, and CMS Medicare Advantage benchmarks.</div>'
-    '</div>',
+    '</div></div>',
     unsafe_allow_html=True
 )
 
 # ── Stats strip ───────────────────────────────────────────────────────────────
 stats = [
-    ("12", "Live Dashboards"),
-    ("850+", "Synthetic Patients"),
-    ("1M", "HealthJoy Lives Modeled"),
-    ("Real Benchmarks", "KFF · ADA · NEJM · Omada S-1"),
+    ("12", "Live Dashboards", BLUE, "rgba(59,130,246,0.3)"),
+    ("850+", "Synthetic Patients", GREEN, "rgba(16,185,129,0.3)"),
+    ("1M", "HealthJoy Lives Modeled", PURPLE, "rgba(139,92,246,0.3)"),
+    ("Real Benchmarks", "KFF · ADA · NEJM · Omada S-1", YELLOW, "rgba(245,158,11,0.3)"),
 ]
 cols = st.columns(4)
-for col, (val, lbl) in zip(cols, stats):
+for col, (val, lbl, accent, glow) in zip(cols, stats):
     with col:
         st.markdown(
-            f'<div style="text-align:center;padding:16px 12px;background:{CARD};'
-            f'border:1px solid rgba(255,255,255,0.06);border-radius:12px;">'
-            f'<div style="font-size:22px;font-weight:800;color:#f8fafc;letter-spacing:-0.5px;">{val}</div>'
-            f'<div style="font-size:11px;color:#475569;margin-top:4px;font-weight:500;">{lbl}</div>'
+            f'<div style="text-align:center;padding:18px 12px;background:{CARD};'
+            f'border:1px solid rgba(255,255,255,0.06);border-radius:12px;'
+            f'border-left:3px solid {accent};">'
+            f'<div style="font-size:22px;font-weight:800;color:#f8fafc;letter-spacing:-0.5px;'
+            f'text-shadow:0 0 20px {glow};">{val}</div>'
+            f'<div style="font-size:11px;color:#475569;margin-top:5px;font-weight:500;">{lbl}</div>'
             f'</div>',
             unsafe_allow_html=True
         )
@@ -224,28 +231,31 @@ for row_start in range(0, len(TOOLS), 3):
     cols = st.columns(3, gap="medium")
     for col, t in zip(cols, row_tools):
         url = f"/{t['slug']}"
+        accent_hex = t['accent']
+        # Build accent color with ~20% opacity for outline glow (hex -> inline rgba already available via tag_bg)
         with col:
             st.markdown(
                 f'<a href="{url}" style="text-decoration:none;display:block;">'
-                f'<div style="background:{CARD};border:1px solid rgba(255,255,255,0.07);'
-                f'border-radius:14px;border-top:3px solid {t["accent"]};padding:22px 22px 20px 22px;'
-                f'box-shadow:0 1px 3px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.02);">'
+                f'<div class="cv-card" style="background:{CARD};border:1px solid rgba(255,255,255,0.07);'
+                f'border-radius:14px;border-top:3px solid {accent_hex};padding:22px 22px 20px 22px;'
+                f'box-shadow:0 1px 3px rgba(0,0,0,0.5),0 0 0 1px {t["tag_bg"]};">'
                 f'<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;">'
-                f'<span style="font-size:28px;line-height:1;">{t["icon"]}</span>'
+                f'<span style="font-size:32px;line-height:1;">{t["icon"]}</span>'
                 f'<span style="display:inline-flex;align-items:center;gap:5px;'
                 f'background:{t["tag_bg"]};border:1px solid {t["tag_border"]};'
-                f'color:{t["accent"]};font-size:10px;font-weight:700;'
+                f'color:{accent_hex};font-size:10px;font-weight:700;'
                 f'padding:3px 9px;border-radius:20px;white-space:nowrap;letter-spacing:0.3px;">'
-                f'<span style="width:4px;height:4px;border-radius:50%;background:{t["accent"]};'
+                f'<span style="width:4px;height:4px;border-radius:50%;background:{accent_hex};'
                 f'display:inline-block;"></span>{t["tag"]}</span>'
                 f'</div>'
                 f'<div style="font-size:15px;font-weight:700;color:#f1f5f9;'
                 f'letter-spacing:-0.2px;margin-bottom:8px;">{t["name"]}</div>'
                 f'<div style="font-size:13px;color:#64748b;line-height:1.6;margin-bottom:20px;'
                 f'min-height:52px;">{t["desc"]}</div>'
-                f'<div style="display:flex;align-items:center;padding-top:12px;'
+                f'<div style="display:flex;align-items:center;justify-content:space-between;padding-top:12px;'
                 f'border-top:1px solid rgba(255,255,255,0.05);">'
-                f'<span style="font-size:12px;font-weight:600;color:{t["accent"]};">Open dashboard →</span>'
+                f'<span style="font-size:12px;font-weight:600;color:{accent_hex};">Open dashboard</span>'
+                f'<span style="font-size:14px;font-weight:700;color:{accent_hex};">→</span>'
                 f'</div></div></a>',
                 unsafe_allow_html=True
             )

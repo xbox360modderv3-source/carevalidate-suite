@@ -48,6 +48,17 @@ html, body, [class*="css"] {
     max-width: 1440px !important;
 }
 
+/* Dot-grid background texture on main content area */
+.main .block-container::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.018) 1px, transparent 1px);
+    background-size: 28px 28px;
+}
+
 /* Hide Streamlit chrome */
 #MainMenu { visibility: hidden !important; }
 header[data-testid="stHeader"] { background: transparent !important; height: 0 !important; }
@@ -55,7 +66,7 @@ footer { visibility: hidden !important; }
 
 /* Sidebar */
 section[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #0a0d16 0%, #080b13 100%) !important;
+    background: linear-gradient(180deg, #0a0d16 0%, #07090f 100%) !important;
     border-right: 1px solid rgba(255,255,255,0.05) !important;
 }
 section[data-testid="stSidebar"] > div { background: transparent !important; }
@@ -68,6 +79,20 @@ section[data-testid="stSidebar"] h3 {
     color: #475569 !important; margin-top: 24px !important; margin-bottom: 8px !important;
 }
 section[data-testid="stSidebar"] .stSlider [data-testid="stTickBar"] { display: none; }
+
+/* Sidebar nav item: hover background lift */
+.cv-nav-item {
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+.cv-nav-item:hover {
+    background: rgba(255,255,255,0.04) !important;
+}
+/* Active sidebar nav item: left accent glow */
+.cv-nav-item-active {
+    background: rgba(59,130,246,0.13) !important;
+    box-shadow: inset 3px 0 0 #3b82f6 !important;
+    border-radius: 8px !important;
+}
 
 /* Dividers */
 hr { border: none !important; border-top: 1px solid rgba(255,255,255,0.05) !important; margin: 24px 0 !important; }
@@ -110,13 +135,14 @@ p  { color: #cbd5e1 !important; font-size: 14px !important; line-height: 1.6 !im
 .stButton > button {
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
     color: #fff !important; border: none !important; border-radius: 8px !important;
-    font-weight: 600 !important; font-size: 13px !important; padding: 10px 20px !important;
+    font-weight: 600 !important; font-size: 13px !important; padding: 11px 22px !important;
     box-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 0 0 1px rgba(59,130,246,0.3) !important;
-    transition: all .15s !important;
+    transition: all 0.2s ease !important;
+    letter-spacing: 0.1px !important;
 }
 .stButton > button:hover {
     background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
-    box-shadow: 0 4px 16px rgba(59,130,246,0.35) !important;
+    box-shadow: 0 0 20px rgba(59,130,246,0.4), 0 4px 16px rgba(59,130,246,0.3) !important;
     transform: translateY(-1px) !important;
 }
 
@@ -125,7 +151,14 @@ p  { color: #cbd5e1 !important; font-size: 14px !important; line-height: 1.6 !im
 
 /* Tabs */
 [data-baseweb="tab-list"] { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,0.06) !important; gap: 0 !important; }
-[data-baseweb="tab"] { background: transparent !important; color: #64748b !important; font-size: 13px !important; font-weight: 500 !important; padding: 10px 16px !important; border-radius: 0 !important; border-bottom: 2px solid transparent !important; }
+[data-baseweb="tab"] {
+    background: transparent !important; color: #64748b !important; font-size: 13px !important;
+    font-weight: 500 !important; padding: 10px 16px !important; border-radius: 0 !important;
+    border-bottom: 2px solid transparent !important;
+    transition: color 0.15s ease, border-color 0.15s ease !important;
+    position: relative !important;
+}
+[data-baseweb="tab"]:hover { color: #94a3b8 !important; border-bottom-color: rgba(59,130,246,0.35) !important; }
 [aria-selected="true"][data-baseweb="tab"] { color: #f1f5f9 !important; border-bottom-color: #3b82f6 !important; }
 [data-baseweb="tab-highlight"] { display: none !important; }
 
@@ -139,7 +172,42 @@ p  { color: #cbd5e1 !important; font-size: 14px !important; line-height: 1.6 !im
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.14); }
 
 /* Metric delta */
-[data-testid="stMetricDelta"] { font-size: 12px !important; }
+[data-testid="stMetricDelta"] { font-size: 12px !important; font-weight: 600 !important; }
+[data-testid="stMetric"] { background: #0d1117 !important; border-radius: 10px !important; padding: 12px 16px !important; border: 1px solid rgba(255,255,255,0.06) !important; }
+[data-testid="stMetricValue"] { font-size: 26px !important; font-weight: 800 !important; letter-spacing: -0.5px !important; }
+[data-testid="stMetricLabel"] { font-size: 11px !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: 0.8px !important; color: #475569 !important; }
+
+/* cv-card: hover lift + glow effect — accent color supplied via inline style */
+.cv-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
+}
+.cv-card:hover {
+    transform: translateY(-4px) !important;
+}
+
+/* cv-hero-gradient: animated gradient text */
+@keyframes hero-gradient-shift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+.cv-hero-gradient {
+    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 40%, #06b6d4 70%, #3b82f6 100%);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: hero-gradient-shift 5s ease infinite;
+}
+
+/* Live status dot pulse */
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; box-shadow: 0 0 4px #10b981; }
+    50%       { opacity: 0.55; box-shadow: 0 0 10px #10b981; }
+}
+.cv-pulse-dot {
+    animation: pulse-dot 2s ease-in-out infinite;
+}
 </style>
 """
 
@@ -168,17 +236,21 @@ def render_header(title: str, subtitle: str = "", badge: str = None, badge_color
         )
 
     st.markdown(
-        f'<div style="background:linear-gradient(180deg,#0b0f1e 0%,#080b14 100%);'
-        f'border-bottom:1px solid rgba(255,255,255,0.07);'
+        f'<div style="background:linear-gradient(180deg,#0b0f1e 0%,#080b14 80%,#07090f 100%);'
+        f'border-bottom:1px solid rgba(59,130,246,0.18);'
+        f'box-shadow:0 1px 24px rgba(59,130,246,0.06);'
         f'padding:16px 28px;margin:-1rem -1rem 28px -1rem;'
         f'display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">'
         f'<div style="display:flex;align-items:center;gap:14px;min-width:0;">'
-        f'<div style="font-size:14px;font-weight:800;color:#3b82f6;letter-spacing:-0.3px;white-space:nowrap;flex-shrink:0;">'
-        f'Care<span style="color:#f1f5f9;">Validate</span></div>'
+        f'<div style="font-size:15px;font-weight:800;letter-spacing:-0.3px;white-space:nowrap;flex-shrink:0;">'
+        f'<span style="color:#3b82f6;text-shadow:0 0 16px rgba(59,130,246,0.45);">Care</span>'
+        f'<span style="color:#f1f5f9;">Validate</span></div>'
         f'<div style="width:1px;height:24px;background:rgba(255,255,255,0.1);flex-shrink:0;"></div>'
         f'<div style="min-width:0;">'
         f'<div style="font-size:15px;font-weight:700;color:#f1f5f9;letter-spacing:-0.2px;'
         f'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{title}</div>'
+        f'<div style="height:2px;width:32px;background:linear-gradient(90deg,#3b82f6,#8b5cf6);'
+        f'border-radius:2px;margin-top:4px;"></div>'
         f'{subtitle_part}</div></div>{badge_part}</div>',
         unsafe_allow_html=True
     )
@@ -208,15 +280,18 @@ def kpi_card(value: str, label: str, sublabel: str = "",
         sublabel_part = f'<div style="font-size:12px;color:#64748b;margin-top:5px;line-height:1.5;">{sublabel}</div>'
 
     return (
-        f'<div style="background:{CARD};border:1px solid rgba(255,255,255,0.07);border-radius:14px;'
-        f'padding:22px 24px;height:100%;'
+        f'<div class="cv-card" style="background:{CARD};border:1px solid rgba(255,255,255,0.07);border-radius:14px;'
+        f'padding:22px 24px;height:100%;position:relative;overflow:hidden;'
         f'box-shadow:0 2px 8px rgba(0,0,0,0.4),0 0 0 1px rgba(255,255,255,0.03);'
         f'border-left:3px solid {val_color};">'
+        f'<div style="position:absolute;top:0;right:0;width:120px;height:120px;pointer-events:none;'
+        f'background:radial-gradient(circle at 100% 0%, {bg} 0%, transparent 70%);border-radius:14px;"></div>'
+        f'<div style="position:relative;z-index:1;">'
         f'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;'
         f'color:#475569;margin-bottom:10px;">{label}</div>'
-        f'<div style="font-size:28px;font-weight:800;letter-spacing:-1px;color:{val_color};'
+        f'<div style="font-size:32px;font-weight:800;letter-spacing:-1px;color:{val_color};'
         f'line-height:1.1;">{value}</div>'
-        f'{sublabel_part}{trend_part}</div>'
+        f'{sublabel_part}{trend_part}</div></div>'
     )
 
 
@@ -293,9 +368,10 @@ def sidebar_nav(current: str = ""):
     with st.sidebar:
         st.markdown(
             '<div style="padding:20px 4px 18px 4px;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:16px;">'
-            '<div style="font-size:16px;font-weight:800;color:#3b82f6;letter-spacing:-0.3px;">'
-            'Care<span style="color:#f1f5f9;">Validate</span></div>'
-            '<div style="font-size:10px;color:#334155;margin-top:3px;font-weight:700;letter-spacing:0.8px;">FINANCE SUITE</div>'
+            '<div style="font-size:18px;font-weight:800;letter-spacing:-0.3px;">'
+            '<span style="color:#3b82f6;text-shadow:0 0 18px rgba(59,130,246,0.5);">Care</span>'
+            '<span style="color:#f1f5f9;">Validate</span></div>'
+            '<div style="font-size:10px;color:#334155;margin-top:3px;font-weight:700;letter-spacing:1px;">FINANCE SUITE</div>'
             '</div>',
             unsafe_allow_html=True
         )
@@ -306,15 +382,15 @@ def sidebar_nav(current: str = ""):
         )
         for t in _NAV_TOOLS:
             active = t["key"] == current
-            bg = "rgba(59,130,246,0.12)" if active else "transparent"
+            item_class = "cv-nav-item cv-nav-item-active" if active else "cv-nav-item"
             fc = "#e2e8f0" if active else "#64748b"
             fw = "600" if active else "400"
             dot = ('<span style="margin-left:auto;width:5px;height:5px;border-radius:50%;'
-                   'background:#3b82f6;display:inline-block;flex-shrink:0;"></span>') if active else ""
+                   'background:#3b82f6;box-shadow:0 0 6px #3b82f6;display:inline-block;flex-shrink:0;"></span>') if active else ""
             st.markdown(
                 f'<a href="/{t["slug"]}" style="text-decoration:none;">'
-                f'<div style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;'
-                f'background:{bg};margin-bottom:2px;cursor:pointer;">'
+                f'<div class="{item_class}" style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;'
+                f'margin-bottom:2px;cursor:pointer;">'
                 f'<span style="font-size:14px;line-height:1;flex-shrink:0;">{t["icon"]}</span>'
                 f'<span style="font-size:13px;font-weight:{fw};color:{fc};flex:1;">{t["name"]}</span>'
                 f'{dot}</div></a>',
