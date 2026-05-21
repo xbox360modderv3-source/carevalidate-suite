@@ -43,12 +43,13 @@ NRR          = 1.18
 LTV_CAC      = 4.2
 TODAY        = date.today()
 
-tab0, tab1, tab2, tab3, tab4 = st.tabs([
+tab0, tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "📝 Executive Summary",
     "📋 Monthly CFO Pack",
     "💵 13-Week Cash Flow",
     "🤝 Contract Renewal Pipeline",
     "🚨 Alert Engine",
+    "📉 Stress Test",
 ])
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -199,13 +200,19 @@ with tab2:
     cf_c1, cf_c2 = st.columns([1, 2], gap="large")
     with cf_c1:
         st.markdown('<div style="font-size:12px;font-weight:700;color:#475569;margin-bottom:10px;">ASSUMPTIONS</div>', unsafe_allow_html=True)
+        cf_scenario  = st.radio("Scenario", ["Base", "Optimistic", "Conservative"],
+                                horizontal=True, key="cf_scen")
         cash_start   = st.number_input("Starting cash ($M)", value=8.4, step=0.1, format="%.1f") * 1e6
         mrr_input    = st.number_input("Current MRR ($)", value=MRR, step=10000)
         churn_wk     = st.slider("Weekly churn rate (%)", 0.2, 2.0, 0.65, 0.05) / 100
         cogs_pct     = st.slider("COGS as % of revenue", 20, 60, 33) / 100
         payroll_mo   = st.number_input("Monthly payroll ($)", value=380_000, step=10000)
+        vendor_mo    = st.number_input("Vendor payments (monthly $)", value=75_000, step=5000,
+                                       help="Pharmacy, platform, and vendor contracts")
         marketing_mo = st.number_input("Monthly marketing ($)", value=85_000, step=5000)
-        other_opex   = st.number_input("Other monthly OpEx ($)", value=95_000, step=5000)
+        other_opex   = st.number_input("Other monthly OpEx ($)", value=20_000, step=5000)
+        settlement_delay = st.slider("Payment settlement delay (days)", 0, 14, 0,
+                                     help="Days added to collection timing — delays near-term cash inflows")
         one_off      = st.number_input("One-time items this period ($)", value=0, step=10000,
                                        help="Positive = inflow (e.g. fundraise), Negative = outflow")
 
@@ -214,79 +221,169 @@ with tab2:
         week_dates = [TODAY + timedelta(weeks=int(w)-1) for w in weeks]
         week_labels = [d.strftime("%b %d") for d in week_dates]
 
-        weekly_revenue  = mrr_input / 4.33
-        weekly_cogs     = weekly_revenue * cogs_pct
-        weekly_payroll  = payroll_mo / 4.33
-        weekly_mkt      = marketing_mo / 4.33
-        weekly_other    = other_opex / 4.33
+        # Scenario parameters
+        _scen_params = {
+            "Base":         (1.00,  0.000,  0.00,  0),
+            "Optimistic":   (1.10, -0.001, -0.02,  0),
+            "Conservative": (0.90,  0.003,  0.04,  5),
+        }
+        _rev_m, _ch_adj, _cogs_adj, _set_adj = _scen_params[cf_scenario]
 
-        revenues, cogs_list, opex_list, net_flows, balances = [], [], [], [], []
+        settle_factor = max(0.0, 1 - (settlement_delay + _set_adj) / 90)
+        adj_cogs      = min(cogs_pct + _cogs_adj, 0.85)
+        adj_churn     = max(churn_wk + _ch_adj, 0.001)
+        wk_rev_base   = mrr_input / 4.33 * _rev_m * settle_factor
+        wk_payroll    = payroll_mo / 4.33
+        wk_vendor     = vendor_mo  / 4.33
+        wk_mkt        = marketing_mo / 4.33
+        wk_other      = other_opex / 4.33
+        total_fixed_wk = wk_payroll + wk_vendor + wk_mkt + wk_other
+
+        revenues, cogs_list, opex_list, vendor_list, net_flows, balances = [], [], [], [], [], []
         balance = cash_start
-        for i, w in enumerate(weeks):
-            rev  = weekly_revenue * (1 - churn_wk) ** i
-            cogs = rev * cogs_pct
-            opex = weekly_payroll + weekly_mkt + weekly_other
+        for i in range(13):
+            rev  = wk_rev_base * (1 - adj_churn) ** i
+            cogs = rev * adj_cogs
             add  = one_off if i == 0 else 0
-            net  = rev - cogs - opex + add
+            net  = rev - cogs - total_fixed_wk + add
             balance += net
             revenues.append(rev)
             cogs_list.append(cogs)
-            opex_list.append(opex)
+            opex_list.append(wk_payroll + wk_mkt + wk_other)
+            vendor_list.append(wk_vendor)
             net_flows.append(net)
             balances.append(balance)
 
-        weeks_to_zero = next((i for i, b in enumerate(balances) if b < 0), None)
-        net_burn_mo = (revenues[-1] - cogs_list[-1] - opex_list[-1]) * 4.33
+        # Three scenario cash balance lines
+        def _scen_balances(rev_m, ch_adj, cogs_adj, set_adj):
+            sf  = max(0.0, 1 - (settlement_delay + set_adj) / 90)
+            wkr = mrr_input / 4.33 * rev_m * sf
+            ac  = min(cogs_pct + cogs_adj, 0.85)
+            ach = max(churn_wk + ch_adj, 0.001)
+            bal = cash_start
+            out = []
+            for i in range(13):
+                r = wkr * (1 - ach) ** i
+                bal += r - r * ac - total_fixed_wk
+                out.append(bal)
+            return out
+
+        bals_opt  = _scen_balances(1.10, -0.001, -0.02, 0)
+        bals_base = _scen_balances(1.00,  0.000,  0.00, 0)
+        bals_cons = _scen_balances(0.90,  0.003,  0.04, 5)
+
+        weeks_to_zero   = next((i+1 for i, b in enumerate(balances) if b < 0), None)
+        cons_zero       = next((i+1 for i, b in enumerate(bals_cons) if b < 0), None)
+        net_burn_mo     = (revenues[-1] - cogs_list[-1] - opex_list[-1] - vendor_list[-1]) * 4.33
+        ending_runway   = balances[-1] / max(abs(net_burn_mo), 1) if net_burn_mo < 0 else None
 
         kpi_row([
             kpi_card(f"${cash_start/1e6:.1f}M", "Starting Cash", "Week 0", color="blue"),
-            kpi_card(f"${balances[-1]/1e6:.1f}M", "Ending Cash (Week 13)",
-                     "At current trajectory",
+            kpi_card(f"${balances[-1]/1e6:.2f}M", f"Ending Cash · {cf_scenario}",
+                     "Week 13 at current trajectory",
                      color="green" if balances[-1] > 0 else "red"),
-            kpi_card(f"${net_burn_mo/1e3:.0f}K/mo",
-                     "Net Cash Flow" if net_burn_mo > 0 else "Monthly Burn",
-                     "Revenue - COGS - OpEx",
-                     color="green" if net_burn_mo > 0 else "red"),
-            kpi_card("None" if weeks_to_zero is None else f"Week {weeks_to_zero}",
-                     "Cash Crisis Point",
-                     "If no new revenue/raise",
-                     color="green" if weeks_to_zero is None else "red"),
+            kpi_card(
+                f"${abs(net_burn_mo)/1e3:.0f}K/mo",
+                "Net Cash Flow" if net_burn_mo >= 0 else "Monthly Burn",
+                "Revenue − COGS − All OpEx",
+                color="green" if net_burn_mo >= 0 else "red",
+            ),
+            kpi_card(
+                "Stable" if weeks_to_zero is None else f"Week {weeks_to_zero}",
+                "Cash Crisis Point",
+                "First week balance goes negative",
+                color="green" if weeks_to_zero is None else "red",
+            ),
         ])
 
+        # Chart
         fig_cf = go.Figure()
-        fig_cf.add_trace(go.Bar(x=week_labels, y=[r/1e3 for r in revenues],
-                                name="Revenue", marker_color=GREEN, opacity=0.8))
-        fig_cf.add_trace(go.Bar(x=week_labels, y=[-c/1e3 for c in cogs_list],
-                                name="COGS", marker_color=YELLOW, opacity=0.8))
-        fig_cf.add_trace(go.Bar(x=week_labels, y=[-o/1e3 for o in opex_list],
-                                name="OpEx", marker_color=RED, opacity=0.8))
+        fig_cf.add_trace(go.Bar(
+            x=week_labels, y=[r/1e3 for r in revenues],
+            name="Revenue", marker_color=GREEN, opacity=0.75,
+        ))
+        fig_cf.add_trace(go.Bar(
+            x=week_labels, y=[-c/1e3 for c in cogs_list],
+            name="COGS", marker_color=YELLOW, opacity=0.75,
+        ))
+        fig_cf.add_trace(go.Bar(
+            x=week_labels, y=[-(o+v)/1e3 for o, v in zip(opex_list, vendor_list)],
+            name="OpEx + Vendor", marker_color=RED, opacity=0.75,
+        ))
         fig_cf.add_trace(go.Scatter(
-            x=week_labels, y=[b/1e6 for b in balances],
-            name="Cash Balance ($M)", yaxis="y2",
-            line=dict(color=BLUE, width=3),
-            mode="lines+markers", marker=dict(size=6),
+            x=week_labels, y=[b/1e6 for b in bals_opt],
+            name="Optimistic", yaxis="y2",
+            line=dict(color=GREEN, width=1.5, dash="dot"),
+            mode="lines",
+        ))
+        fig_cf.add_trace(go.Scatter(
+            x=week_labels, y=[b/1e6 for b in bals_base],
+            name="Base", yaxis="y2",
+            line=dict(color=BLUE, width=2.5),
+            mode="lines+markers", marker=dict(size=5),
+        ))
+        fig_cf.add_trace(go.Scatter(
+            x=week_labels, y=[b/1e6 for b in bals_cons],
+            name="Conservative", yaxis="y2",
+            line=dict(color=RED, width=1.5, dash="dot"),
+            mode="lines",
         ))
         fig_cf.update_layout(
             template="plotly_dark", paper_bgcolor=BG, plot_bgcolor=CARD,
-            barmode="relative", height=360, margin=dict(l=0,r=60,t=10,b=0),
+            barmode="relative", height=360, margin=dict(l=0, r=60, t=10, b=0),
             yaxis=dict(title="Weekly Cash Flow ($K)", gridcolor="rgba(255,255,255,0.04)"),
             yaxis2=dict(title="Cash Balance ($M)", overlaying="y", side="right",
-                        showgrid=False, tickformat="$,.1f"),
+                        showgrid=False, tickformat="$.2f"),
             legend=dict(orientation="h", yanchor="bottom", y=1, bgcolor="rgba(0,0,0,0)",
                         font=dict(size=11)),
             xaxis=dict(gridcolor="rgba(255,255,255,0.04)"),
         )
         st.plotly_chart(fig_cf, use_container_width=True)
 
+        # Detailed table
         cf_df = pd.DataFrame({
-            "Week": week_labels,
+            "Week":               week_labels,
             "Revenue ($K)":       [f"${r/1e3:.0f}K" for r in revenues],
             "COGS ($K)":          [f"${c/1e3:.0f}K" for c in cogs_list],
-            "OpEx ($K)":          [f"${o/1e3:.0f}K" for o in opex_list],
+            "Payroll+Mktg ($K)":  [f"${o/1e3:.0f}K" for o in opex_list],
+            "Vendor ($K)":        [f"${v/1e3:.0f}K" for v in vendor_list],
             "Net Flow ($K)":      [f"{'+'if n>0 else ''}${n/1e3:.0f}K" for n in net_flows],
             "Cash Balance ($M)":  [f"${b/1e6:.2f}M" for b in balances],
         })
         st.dataframe(cf_df.set_index("Week"), use_container_width=True)
+
+        # ── Alerts ────────────────────────────────────────────────────────
+        st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
+        if weeks_to_zero:
+            alert(
+                f"<strong>Cash crisis in Week {weeks_to_zero}</strong> under the {cf_scenario} scenario. "
+                f"Ending balance goes negative — immediate action required.",
+                level="error",
+            )
+        if cons_zero and cf_scenario != "Conservative":
+            alert(
+                f"Conservative scenario hits negative cash in Week {cons_zero}. "
+                f"Model downside risk before the next board meeting.",
+                level="warning",
+            )
+        if ending_runway is not None and ending_runway < 6:
+            alert(
+                f"Implied runway below 6 months at Week 13 burn rate. "
+                f"Initiate bridge financing or OpEx reduction plan.",
+                level="error",
+            )
+        if vendor_mo > (payroll_mo + marketing_mo + other_opex) * 0.40:
+            alert(
+                f"Vendor payments (${vendor_mo/1e3:.0f}K/mo) represent more than 40% of non-COGS OpEx. "
+                f"Review vendor contract terms for flexibility.",
+                level="warning",
+            )
+        if settlement_delay >= 7:
+            alert(
+                f"Settlement delay of {settlement_delay} days reduces effective weekly collections by "
+                f"{(1 - settle_factor)*100:.0f}%. Monitor processor settlement files daily.",
+                level="warning",
+            )
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -693,3 +790,225 @@ alert(
     f"Source assumptions: CMS MLR guidance, ReferWell published outcomes, CMS MA Stars 2026.",
     level="success" if net_val > 0 else "info",
 )
+
+# ══════════════════════════════════════════════════════════════════════════════
+# TAB 5 — SCENARIO STRESS TEST
+# ══════════════════════════════════════════════════════════════════════════════
+with tab5:
+    section("Scenario Stress Test", "📉")
+    st.caption(
+        "Move the sliders to stress-test the business model. "
+        "All outputs are driven by synthetic assumptions — illustrative only."
+    )
+
+    # ── Base constants ────────────────────────────────────────────────────
+    _BASE_MRR         = MRR            # $1.24M
+    _BASE_GM          = GM_RATE        # 0.67
+    _BASE_COGS_PCT    = 1 - GM_RATE    # 0.33
+    _BASE_CHURN_MO    = CHURN_MO       # 0.028
+    _BASE_RUNWAY      = RUNWAY_MO      # 18
+    _BASE_CAC         = 127            # blended CAC $
+    _BASE_PAYBACK_MO  = 14
+    _BASE_ARPU        = 285            # $/patient/mo
+    _BASE_PATIENTS    = 850
+    _BASE_OPEX_MO     = 380_000 + 85_000 + 75_000 + 20_000  # payroll+mkt+vendor+other
+    _BASE_CASH        = 8.4e6
+
+    st_s1, st_s2 = st.columns([1, 2], gap="large")
+
+    with st_s1:
+        st.markdown(
+            '<div style="font-size:12px;font-weight:700;color:#475569;margin-bottom:12px;">STRESS LEVERS</div>',
+            unsafe_allow_html=True,
+        )
+        denial_shock      = st.slider("Denial rate increase (pp)",        0, 15,  0, 1,
+                                      help="Each +1pp denial reduces effective collections ~0.8%") / 100
+        retention_shock   = st.slider("Refill retention decline (pp)",    0, 20,  0, 1,
+                                      help="Reduces MRR from existing patients") / 100
+        cac_shock         = st.slider("CAC increase (%)",                 0, 50,  0, 5) / 100
+        pharma_shock      = st.slider("Pharmacy cost increase (%)",       0, 30,  0, 5,
+                                      help="Increases COGS as % of revenue") / 100
+        settle_shock_days = st.slider("Settlement delay (additional days)",0, 14,  0, 1,
+                                      help="Defers cash collections — reduces near-term runway")
+
+        st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
+        st.markdown(
+            '<div style="font-size:11px;color:#334155;line-height:1.6;">'
+            'Synthetic data only. No PHI. Prototype for discussion. '
+            'Outputs are illustrative and should not be treated as financial, '
+            'legal, or compliance advice.'
+            '</div>',
+            unsafe_allow_html=True,
+        )
+
+    with st_s2:
+        # ── Compute stressed values ───────────────────────────────────────
+        # Denial shock: each pp → ~0.8% revenue reduction (denial → A/R delay)
+        denial_rev_impact   = denial_shock * 0.8
+        # Retention shock: reduces existing patient MRR by that fraction
+        retention_rev_impact = retention_shock
+        # Combined MRR impact
+        stressed_mrr        = _BASE_MRR * (1 - denial_rev_impact - retention_rev_impact)
+        mrr_delta           = stressed_mrr - _BASE_MRR
+
+        # COGS: pharmacy cost increase as additional % of revenue
+        stressed_cogs_pct   = _BASE_COGS_PCT * (1 + pharma_shock)
+        stressed_gm         = 1 - stressed_cogs_pct
+        gm_delta_pp         = (stressed_gm - _BASE_GM) * 100
+
+        # Gross profit impact
+        base_gp_mo          = _BASE_MRR * _BASE_GM
+        stressed_gp_mo      = stressed_mrr * stressed_gm
+        gp_delta_mo         = stressed_gp_mo - base_gp_mo
+
+        # CAC shock → marketing OpEx increases, payback extends
+        stressed_cac        = _BASE_CAC * (1 + cac_shock)
+        payback_delta_mo    = (stressed_cac - _BASE_CAC) / _BASE_ARPU
+
+        # EBITDA proxy: gross profit − fixed opex
+        ebitda_base         = base_gp_mo - _BASE_OPEX_MO
+        ebitda_stressed     = stressed_gp_mo - _BASE_OPEX_MO * (1 + cac_shock * 0.3)
+        ebitda_delta        = ebitda_stressed - ebitda_base
+
+        # Runway impact: stressed monthly burn / cash
+        stressed_burn_mo    = max(-ebitda_stressed, 0)
+        base_burn_mo        = max(-ebitda_base, 0)
+        stressed_runway     = _BASE_CASH / stressed_burn_mo if stressed_burn_mo > 0 else 99
+        runway_delta        = stressed_runway - _BASE_RUNWAY
+
+        # Break-even patients: opex / (ARPU × stressed GM)
+        stressed_margin_per_pt = _BASE_ARPU * stressed_gm
+        breakeven_pts         = int(_BASE_OPEX_MO / max(stressed_margin_per_pt, 1))
+        breakeven_delta       = breakeven_pts - int(_BASE_OPEX_MO / max(_BASE_ARPU * _BASE_GM, 1))
+
+        # Settlement delay cash impact (~$K deferred over 13 weeks)
+        settle_cash_drag_k  = settle_shock_days * _BASE_MRR / 30 / 1e3
+
+        # ── KPI cards ─────────────────────────────────────────────────────
+        kpi_row([
+            kpi_card(
+                f"${mrr_delta/1e3:+.0f}K/mo",
+                "MRR Impact",
+                f"Stressed: ${stressed_mrr/1e3:.0f}K",
+                color="red" if mrr_delta < 0 else "green",
+            ),
+            kpi_card(
+                f"{gm_delta_pp:+.1f}pp",
+                "Gross Margin Impact",
+                f"Stressed: {stressed_gm:.1%}",
+                color="red" if gm_delta_pp < 0 else "green",
+            ),
+            kpi_card(
+                f"${ebitda_delta/1e3:+.0f}K/mo",
+                "EBITDA Impact",
+                f"Stressed: ${ebitda_stressed/1e3:+.0f}K/mo",
+                color="red" if ebitda_delta < 0 else "green",
+            ),
+            kpi_card(
+                f"{runway_delta:+.1f}mo" if stressed_runway < 99 else "Stable",
+                "Runway Impact",
+                f"Stressed: {min(stressed_runway, 99):.1f}mo" if stressed_runway < 99 else "Cash flow positive",
+                color="red" if runway_delta < -2 else "yellow" if runway_delta < 0 else "green",
+            ),
+        ])
+        kpi_row([
+            kpi_card(
+                f"{breakeven_pts:,} pts",
+                "Break-Even Patient Volume",
+                f"Delta: {breakeven_delta:+,} vs. base",
+                color="red" if breakeven_delta > 50 else "yellow" if breakeven_delta > 0 else "green",
+            ),
+            kpi_card(
+                f"{_BASE_PAYBACK_MO + payback_delta_mo:.1f}mo",
+                "CAC Payback (Stressed)",
+                f"Base: {_BASE_PAYBACK_MO}mo · +{payback_delta_mo:.1f}mo",
+                color="red" if payback_delta_mo > 3 else "yellow" if payback_delta_mo > 0 else "green",
+            ),
+            kpi_card(
+                f"−${settle_cash_drag_k:.0f}K",
+                "Settlement Cash Drag",
+                f"{settle_shock_days}d delay × ${_BASE_MRR/30/1e3:.0f}K/day",
+                color="red" if settle_cash_drag_k > 50 else "yellow" if settle_cash_drag_k > 0 else "green",
+            ),
+            kpi_card(
+                f"${gp_delta_mo/1e3:+.0f}K/mo",
+                "Gross Profit Impact",
+                f"Stressed GP: ${stressed_gp_mo/1e3:.0f}K/mo",
+                color="red" if gp_delta_mo < 0 else "green",
+            ),
+        ])
+
+        # ── Tornado chart — sensitivity by lever ─────────────────────────
+        section("Sensitivity: EBITDA Impact by Lever", "")
+
+        _levers = []
+        if denial_shock > 0:
+            _d = -denial_shock * 0.8 * _BASE_MRR * _BASE_GM / 1e3
+            _levers.append(("Denial rate +" + f"{denial_shock*100:.0f}pp", _d))
+        if retention_shock > 0:
+            _r = -retention_shock * _BASE_MRR * _BASE_GM / 1e3
+            _levers.append(("Retention −" + f"{retention_shock*100:.0f}pp", _r))
+        if pharma_shock > 0:
+            _p = -pharma_shock * _BASE_COGS_PCT * _BASE_MRR / 1e3
+            _levers.append(("Pharmacy cost +" + f"{pharma_shock*100:.0f}%", _p))
+        if cac_shock > 0:
+            _c = -cac_shock * 0.3 * _BASE_OPEX_MO / 1e3
+            _levers.append(("CAC +" + f"{cac_shock*100:.0f}%", _c))
+        if settle_shock_days > 0:
+            _s = -settle_cash_drag_k
+            _levers.append((f"Settlement +{settle_shock_days}d", _s))
+
+        if _levers:
+            _levers.sort(key=lambda x: x[1])
+            lever_names, lever_vals = zip(*_levers)
+            bar_colors = [RED if v < -20 else YELLOW if v < 0 else GREEN for v in lever_vals]
+            fig_tornado = go.Figure(go.Bar(
+                x=list(lever_vals),
+                y=list(lever_names),
+                orientation="h",
+                marker_color=bar_colors,
+                text=[f"${v:+.0f}K/mo" for v in lever_vals],
+                textposition="outside",
+                textfont=dict(size=11, color="#f1f5f9"),
+            ))
+            fig_tornado.update_layout(
+                template="plotly_dark", paper_bgcolor=BG, plot_bgcolor=CARD,
+                height=max(180, len(_levers) * 52),
+                margin=dict(l=0, r=100, t=10, b=0),
+                xaxis=dict(gridcolor="rgba(255,255,255,0.04)", title="EBITDA Impact ($K/mo)",
+                           tickprefix="$", ticksuffix="K", zeroline=True,
+                           zerolinecolor="rgba(255,255,255,0.15)", zerolinewidth=1),
+                yaxis=dict(showgrid=False, tickfont=dict(size=11)),
+                showlegend=False,
+            )
+            st.plotly_chart(fig_tornado, use_container_width=True)
+        else:
+            st.markdown(
+                '<div style="background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.18);'
+                'border-radius:10px;padding:20px;text-align:center;color:#64748b;font-size:13px;">'
+                'Move any slider above to see sensitivity impact.</div>',
+                unsafe_allow_html=True,
+            )
+
+        # ── Summary table ──────────────────────────────────────────────────
+        section("Stress Test Summary", "")
+        summary_df = pd.DataFrame([
+            {"Metric": "MRR",              "Base": f"${_BASE_MRR/1e3:.0f}K/mo",    "Stressed": f"${stressed_mrr/1e3:.0f}K/mo",      "Delta": f"${mrr_delta/1e3:+.0f}K/mo"},
+            {"Metric": "Gross Margin",     "Base": f"{_BASE_GM:.1%}",               "Stressed": f"{stressed_gm:.1%}",                 "Delta": f"{gm_delta_pp:+.1f}pp"},
+            {"Metric": "EBITDA",           "Base": f"${ebitda_base/1e3:+.0f}K/mo", "Stressed": f"${ebitda_stressed/1e3:+.0f}K/mo",  "Delta": f"${ebitda_delta/1e3:+.0f}K/mo"},
+            {"Metric": "Cash Runway",      "Base": f"{_BASE_RUNWAY}mo",             "Stressed": f"{min(stressed_runway,99):.1f}mo" if stressed_burn_mo > 0 else "Positive", "Delta": f"{runway_delta:+.1f}mo" if stressed_burn_mo > 0 else "—"},
+            {"Metric": "Break-even Pts",   "Base": f"{int(_BASE_OPEX_MO / max(_BASE_ARPU*_BASE_GM,1)):,}", "Stressed": f"{breakeven_pts:,}", "Delta": f"{breakeven_delta:+,}"},
+            {"Metric": "CAC Payback",      "Base": f"{_BASE_PAYBACK_MO}mo",         "Stressed": f"{_BASE_PAYBACK_MO + payback_delta_mo:.1f}mo", "Delta": f"{payback_delta_mo:+.1f}mo"},
+            {"Metric": "Settlement Drag",  "Base": "$0",                            "Stressed": f"−${settle_cash_drag_k:.0f}K",      "Delta": f"−${settle_cash_drag_k:.0f}K"},
+        ])
+        st.dataframe(summary_df, use_container_width=True, hide_index=True)
+
+        # Download stress test summary
+        stress_csv = summary_df.to_csv(index=False).encode()
+        st.download_button(
+            label="⬇ Download Stress Test Summary CSV",
+            data=stress_csv,
+            file_name="stress_test_summary.csv",
+            mime="text/csv",
+            key="dl_stress",
+        )
