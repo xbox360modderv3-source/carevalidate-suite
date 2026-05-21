@@ -381,22 +381,33 @@ def sidebar_nav(current: str = ""):
             'letter-spacing:1.2px;text-transform:uppercase;margin-bottom:8px;">Navigation</div>',
             unsafe_allow_html=True
         )
+        # CSS to style st.page_link buttons as dark-theme nav items
+        st.markdown(
+            """<style>
+section[data-testid="stSidebar"] [data-testid="stPageLink"] {
+    margin-bottom:2px;
+}
+section[data-testid="stSidebar"] [data-testid="stPageLink-NavLink"] {
+    display:flex;align-items:center;padding:8px 10px;border-radius:8px;
+    font-size:13px;color:#64748b;text-decoration:none;
+    background:transparent;border:none;
+    transition:background 0.15s,color 0.15s;width:100%;
+}
+section[data-testid="stSidebar"] [data-testid="stPageLink-NavLink"]:hover {
+    background:rgba(255,255,255,0.04);color:#e2e8f0;
+}
+section[data-testid="stSidebar"] [data-testid="stPageLink-NavLink"][aria-current="page"] {
+    background:rgba(59,130,246,0.08);border-left:2px solid #3b82f6;
+    color:#e2e8f0;font-weight:600;
+}
+section[data-testid="stSidebar"] [data-testid="stPageLink-NavLink"] p {
+    margin:0;font-size:13px;
+}
+</style>""",
+            unsafe_allow_html=True,
+        )
         for t in _NAV_TOOLS:
-            active = t["key"] == current
-            item_class = "cv-nav-item cv-nav-item-active" if active else "cv-nav-item"
-            fc = "#e2e8f0" if active else "#64748b"
-            fw = "600" if active else "400"
-            dot = ('<span style="margin-left:auto;width:5px;height:5px;border-radius:50%;'
-                   'background:#3b82f6;box-shadow:0 0 6px #3b82f6;display:inline-block;flex-shrink:0;"></span>') if active else ""
-            st.markdown(
-                f'<a href="/{t["slug"]}" style="text-decoration:none;">'
-                f'<div class="{item_class}" style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;'
-                f'margin-bottom:2px;cursor:pointer;">'
-                f'<span style="font-size:14px;line-height:1;flex-shrink:0;">{t["icon"]}</span>'
-                f'<span style="font-size:13px;font-weight:{fw};color:{fc};flex:1;">{t["name"]}</span>'
-                f'{dot}</div></a>',
-                unsafe_allow_html=True
-            )
+            st.page_link(t["page"], label=f"{t['icon']}  {t['name']}", use_container_width=True)
         st.markdown(
             '<div style="margin-top:24px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06);">'
             '<div style="font-size:10px;font-weight:700;color:#334155;letter-spacing:1.2px;'
