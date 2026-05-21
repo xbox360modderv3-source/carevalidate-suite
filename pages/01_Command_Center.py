@@ -95,45 +95,29 @@ pipeline_employers = 28
 # ── Start Here — 3-Minute CFO Review ─────────────────────────────────────────
 _DEMO_CARDS = [
     {
-        "n": "1",
-        "icon": "📝",
-        "title": "CFO Morning Brief",
+        "n": "1", "icon": "📝", "title": "CFO Morning Brief",
         "desc": "Executive commentary, top risks, action queue, and cash runway — everything a CFO reads Monday morning.",
-        "href": "/CFO_Suite",
-        "color": BLUE,
-        "bg": "rgba(59,130,246,0.10)",
-        "border": "rgba(59,130,246,0.25)",
+        "page": "pages/09_CFO_Suite.py",
+        "color": BLUE, "bg": "rgba(59,130,246,0.10)", "border": "rgba(59,130,246,0.25)",
     },
     {
-        "n": "2",
-        "icon": "⚖",
-        "title": "Reconciliation Engine",
+        "n": "2", "icon": "⚖", "title": "Reconciliation Engine",
         "desc": "Auto-match rate, exception queue, SLA aging, and duplicate detection across payment transactions.",
-        "href": "/Reconciliation",
-        "color": GREEN,
-        "bg": "rgba(16,185,129,0.10)",
-        "border": "rgba(16,185,129,0.25)",
+        "page": "pages/12_Reconciliation.py",
+        "color": GREEN, "bg": "rgba(16,185,129,0.10)", "border": "rgba(16,185,129,0.25)",
     },
     {
-        "n": "3",
-        "icon": "💳",
-        "title": "Payer Revenue Cycle",
+        "n": "3", "icon": "💳", "title": "Payer Revenue Cycle",
         "desc": "Claims volume, denial rate by payer, DSO, A/R aging buckets, and net collection rate scorecard.",
-        "href": "/Payer_Revenue_Cycle",
-        "color": PURPLE,
-        "bg": "rgba(139,92,246,0.10)",
-        "border": "rgba(139,92,246,0.25)",
+        "page": "pages/13_Payer_Revenue_Cycle.py",
+        "color": PURPLE, "bg": "rgba(139,92,246,0.10)", "border": "rgba(139,92,246,0.25)",
     },
     {
-        "n": "4",
-        "icon": "📉",
-        "title": "Scenario Stress Test",
+        "n": "4", "icon": "📉", "title": "Scenario Stress Test",
         "desc": "Move sliders — denial rate, CAC, retention, pharmacy cost, settlement delay — see live EBITDA and runway impact.",
-        "href": "/CFO_Suite",
+        "page": "pages/09_CFO_Suite.py",
         "note": "Open CFO Suite → Stress Test tab",
-        "color": YELLOW,
-        "bg": "rgba(245,158,11,0.10)",
-        "border": "rgba(245,158,11,0.25)",
+        "color": YELLOW, "bg": "rgba(245,158,11,0.10)", "border": "rgba(245,158,11,0.25)",
     },
 ]
 
@@ -145,33 +129,35 @@ st.markdown(
     '<div style="font-size:12px;color:#475569;margin-bottom:18px;">'
     'Click through in order. Each section is self-contained. '
     'Synthetic data only — no PHI, no real company or patient data.'
-    '</div>'
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">',
+    '</div>',
     unsafe_allow_html=True,
 )
-for _card in _DEMO_CARDS:
-    _note_html = (
-        f'<div style="font-size:10px;color:{_card["color"]};margin-top:6px;font-weight:600;">'
-        f'↳ {_card["note"]}</div>'
-    ) if _card.get("note") else ""
-    st.markdown(
-        f'<a href="{_card["href"]}" target="_self" style="text-decoration:none;">'
-        f'<div style="background:{_card["bg"]};border:1px solid {_card["border"]};'
-        f'border-radius:10px;padding:14px 16px;cursor:pointer;'
-        f'transition:transform 0.15s ease;height:100%;">'
-        f'<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">'
-        f'<span style="width:26px;height:26px;border-radius:50%;background:{_card["color"]};'
-        f'color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;'
-        f'justify-content:center;flex-shrink:0;">{_card["n"]}</span>'
-        f'<span style="font-size:15px;">{_card["icon"]}</span>'
-        f'<span style="font-size:13px;font-weight:700;color:#f1f5f9;">{_card["title"]}</span>'
-        f'</div>'
-        f'<div style="font-size:12px;color:#94a3b8;line-height:1.55;padding-left:36px;">'
-        f'{_card["desc"]}{_note_html}</div>'
-        f'</div></a>',
-        unsafe_allow_html=True,
-    )
-st.markdown("</div></div>", unsafe_allow_html=True)
+# 2-column grid for the 4 cards — each card is visual HTML + st.page_link underneath
+_sh_c1, _sh_c2 = st.columns(2, gap="small")
+for _idx, _card in enumerate(_DEMO_CARDS):
+    _col = _sh_c1 if _idx % 2 == 0 else _sh_c2
+    with _col:
+        _note_html = (
+            f'<div style="font-size:10px;color:{_card["color"]};margin-top:6px;font-weight:600;">'
+            f'↳ {_card["note"]}</div>'
+        ) if _card.get("note") else ""
+        st.markdown(
+            f'<div style="background:{_card["bg"]};border:1px solid {_card["border"]};'
+            f'border-radius:10px 10px 0 0;padding:14px 16px 8px 16px;">'
+            f'<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">'
+            f'<span style="width:26px;height:26px;border-radius:50%;background:{_card["color"]};'
+            f'color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;'
+            f'justify-content:center;flex-shrink:0;">{_card["n"]}</span>'
+            f'<span style="font-size:15px;">{_card["icon"]}</span>'
+            f'<span style="font-size:13px;font-weight:700;color:#f1f5f9;">{_card["title"]}</span>'
+            f'</div>'
+            f'<div style="font-size:12px;color:#94a3b8;line-height:1.55;padding-left:36px;">'
+            f'{_card["desc"]}{_note_html}</div>'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
+        st.page_link(_card["page"], label="Open →", use_container_width=True)
+st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height:4px'></div>", unsafe_allow_html=True)
 
@@ -520,23 +506,24 @@ with col3:
 # ── Quick drill-down nav ──────────────────────────────────────────────────────
 section("Drill Down to Detail", "")
 QUICK = [
-    ("💊", "GLP-1 Scenarios", "Revenue model, ban impact", 8502, GREEN),
-    ("📊", "Unit Economics",  "CAC, LTV, cohort retention",  8503, BLUE),
-    ("🏢", "Employer ROI",   "B2B ROI for sales calls",      8504, PURPLE),
-    ("🔮", "Churn Engine",   "Patient-level risk scores",     8505, YELLOW),
-    ("📈", "Series A",       "Investor metrics & checklist",  8506, GREEN),
-    ("🔍", "Compliance",     "Billing deviations & flags",    8507, RED),
+    ("💊", "GLP-1 Scenarios", "Revenue model, ban impact",   "pages/02_GLP1_Scenarios.py",    GREEN),
+    ("📊", "Unit Economics",  "CAC, LTV, cohort retention",  "pages/03_Unit_Economics.py",    BLUE),
+    ("🏢", "Employer ROI",   "B2B ROI for sales calls",      "pages/04_Employer_ROI.py",      PURPLE),
+    ("🔮", "Churn Engine",   "Patient-level risk scores",     "pages/05_Churn_Engine.py",      YELLOW),
+    ("📈", "Series A",       "Investor metrics & checklist",  "pages/06_Series_A.py",          GREEN),
+    ("🔍", "Compliance",     "Billing deviations & flags",    "pages/07_Compliance_Monitor.py",RED),
 ]
 cols = st.columns(6, gap="small")
-for col, (icon, name, desc, port, color) in zip(cols, QUICK):
+for col, (icon, name, desc, page, color) in zip(cols, QUICK):
     with col:
         st.markdown(
-            f'<a href="http://localhost:{port}" target="_blank" style="text-decoration:none;">'
             f'<div style="background:{CARD};border:1px solid rgba(255,255,255,0.07);'
-            f'border-radius:12px;border-top:2px solid {color};padding:16px 14px;text-align:center;">'
-            f'<div style="font-size:22px;margin-bottom:8px;">{icon}</div>'
+            f'border-radius:12px 12px 0 0;border-top:2px solid {color};'
+            f'padding:16px 14px 8px 14px;text-align:center;">'
+            f'<div style="font-size:22px;margin-bottom:6px;">{icon}</div>'
             f'<div style="font-size:12px;font-weight:700;color:#f1f5f9;margin-bottom:4px;">{name}</div>'
             f'<div style="font-size:11px;color:#475569;line-height:1.4;">{desc}</div>'
-            f'</div></a>',
-            unsafe_allow_html=True
+            f'</div>',
+            unsafe_allow_html=True,
         )
+        st.page_link(page, label="Open →", use_container_width=True)

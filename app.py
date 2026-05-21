@@ -22,134 +22,95 @@ logout_button()
 # ── Tool definitions ─────────────────────────────────────────────────────────
 TOOLS = [
     {
-        "icon": "⌂",
-        "name": "Command Center",
+        "icon": "⌂",  "name": "Command Center",
         "tag": "CFO Morning View",
         "desc": "All critical KPIs in one dashboard — MRR, churn, compliance risk, and revenue scenarios aggregated for the CFO.",
-        "slug": "Command_Center",
-        "accent": "#3b82f6",
-        "tag_bg": "rgba(59,130,246,0.10)",
-        "tag_border": "rgba(59,130,246,0.30)",
+        "page": "pages/01_Command_Center.py",
+        "accent": "#3b82f6", "tag_bg": "rgba(59,130,246,0.10)", "tag_border": "rgba(59,130,246,0.30)",
     },
     {
-        "icon": "💊",
-        "name": "GLP-1 Scenario Model",
+        "icon": "💊", "name": "GLP-1 Scenario Model",
         "tag": "Revenue Modeling",
         "desc": "Four-scenario revenue impact of the FDA compounded semaglutide ban — branded vs alt-peptide pivot vs generic entry.",
-        "slug": "GLP1_Scenarios",
-        "accent": "#10b981",
-        "tag_bg": "rgba(16,185,129,0.10)",
-        "tag_border": "rgba(16,185,129,0.25)",
+        "page": "pages/02_GLP1_Scenarios.py",
+        "accent": "#10b981", "tag_bg": "rgba(16,185,129,0.10)", "tag_border": "rgba(16,185,129,0.25)",
     },
     {
-        "icon": "📊",
-        "name": "Unit Economics",
+        "icon": "📊", "name": "Unit Economics",
         "tag": "Growth Analytics",
         "desc": "CAC, LTV, payback, cohort retention, and PMPM metrics across CareGLP, CareHRT, CareDERM, and AccommoCare.",
-        "slug": "Unit_Economics",
-        "accent": "#3b82f6",
-        "tag_bg": "rgba(59,130,246,0.10)",
-        "tag_border": "rgba(59,130,246,0.25)",
+        "page": "pages/03_Unit_Economics.py",
+        "accent": "#3b82f6", "tag_bg": "rgba(59,130,246,0.10)", "tag_border": "rgba(59,130,246,0.25)",
     },
     {
-        "icon": "🏢",
-        "name": "Employer ROI Calculator",
+        "icon": "🏢", "name": "Employer ROI Calculator",
         "tag": "Sales Enablement",
         "desc": "B2B sales tool quantifying the financial case for CareValidate programs — claims savings, productivity, T2D prevention.",
-        "slug": "Employer_ROI",
-        "accent": "#8b5cf6",
-        "tag_bg": "rgba(139,92,246,0.10)",
-        "tag_border": "rgba(139,92,246,0.25)",
+        "page": "pages/04_Employer_ROI.py",
+        "accent": "#8b5cf6", "tag_bg": "rgba(139,92,246,0.10)", "tag_border": "rgba(139,92,246,0.25)",
     },
     {
-        "icon": "🔮",
-        "name": "Predictive Churn Engine",
+        "icon": "🔮", "name": "Predictive Churn Engine",
         "tag": "Retention ML",
         "desc": "ML-based patient churn risk scoring — flags at-risk patients 30–45 days early and ranks intervention by revenue at risk.",
-        "slug": "Churn_Engine",
-        "accent": "#f59e0b",
-        "tag_bg": "rgba(245,158,11,0.10)",
-        "tag_border": "rgba(245,158,11,0.25)",
+        "page": "pages/05_Churn_Engine.py",
+        "accent": "#f59e0b", "tag_bg": "rgba(245,158,11,0.10)", "tag_border": "rgba(245,158,11,0.25)",
     },
     {
-        "icon": "📈",
-        "name": "Series A Data Room",
+        "icon": "📈", "name": "Series A Data Room",
         "tag": "Investor Ready",
         "desc": "Investor-ready metrics package with benchmark comparison, MRR trajectory, use-of-proceeds, and Series A checklist.",
-        "slug": "Series_A",
-        "accent": "#10b981",
-        "tag_bg": "rgba(16,185,129,0.10)",
-        "tag_border": "rgba(16,185,129,0.25)",
+        "page": "pages/06_Series_A.py",
+        "accent": "#10b981", "tag_bg": "rgba(16,185,129,0.10)", "tag_border": "rgba(16,185,129,0.25)",
     },
     {
-        "icon": "🔄",
-        "name": "Retention Operations",
+        "icon": "🔄", "name": "Retention Operations",
         "tag": "Patient Retention",
         "desc": "Refill gap early-warning, cohort survival curves, engagement scoring, and auto-generated employer renewal reports.",
-        "slug": "Retention_Ops",
-        "accent": "#06b6d4",
-        "tag_bg": "rgba(6,182,212,0.10)",
-        "tag_border": "rgba(6,182,212,0.25)",
+        "page": "pages/08_Retention_Ops.py",
+        "accent": "#06b6d4", "tag_bg": "rgba(6,182,212,0.10)", "tag_border": "rgba(6,182,212,0.25)",
     },
     {
-        "icon": "🔍",
-        "name": "Contract Compliance Monitor",
+        "icon": "🔍", "name": "Contract Compliance Monitor",
         "tag": "Compliance",
         "desc": "Detects billing deviations, HEDIS Stars impact, and CMS bonus modeling. Flags TRC gap closure below 68% floor.",
-        "slug": "Compliance_Monitor",
-        "accent": "#ef4444",
-        "tag_bg": "rgba(239,68,68,0.10)",
-        "tag_border": "rgba(239,68,68,0.25)",
+        "page": "pages/07_Compliance_Monitor.py",
+        "accent": "#ef4444", "tag_bg": "rgba(239,68,68,0.10)", "tag_border": "rgba(239,68,68,0.25)",
     },
     {
-        "icon": "⚙",
-        "name": "CFO Automation Suite",
+        "icon": "⚙",  "name": "CFO Automation Suite",
         "tag": "CFO Tooling",
         "desc": "Monthly pack generator, 13-week cash flow forecast, MLR finance impact scenario model, and real-time alert engine.",
-        "slug": "CFO_Suite",
-        "accent": "#f59e0b",
-        "tag_bg": "rgba(245,158,11,0.10)",
-        "tag_border": "rgba(245,158,11,0.25)",
+        "page": "pages/09_CFO_Suite.py",
+        "accent": "#f59e0b", "tag_bg": "rgba(245,158,11,0.10)", "tag_border": "rgba(245,158,11,0.25)",
     },
     {
-        "icon": "🧭",
-        "name": "Navigator Workforce Intelligence",
+        "icon": "🧭", "name": "Navigator Workforce Intelligence",
         "tag": "Care Operations",
         "desc": "FTE productivity, capacity planning, per-FTE ROI, language coverage, and automated weekly ops brief for navigator teams.",
-        "slug": "Navigator_Ops",
-        "accent": "#06b6d4",
-        "tag_bg": "rgba(6,182,212,0.10)",
-        "tag_border": "rgba(6,182,212,0.25)",
+        "page": "pages/10_Navigator_Ops.py",
+        "accent": "#06b6d4", "tag_bg": "rgba(6,182,212,0.10)", "tag_border": "rgba(6,182,212,0.25)",
     },
     {
-        "icon": "🔒",
-        "name": "Security & Compliance Readiness Center",
+        "icon": "🔒", "name": "Security & Compliance Readiness Center",
         "tag": "Compliance & Security",
-        "desc": "RBAC access matrix, audit trail, BAA vendor tracker, breach cost model, and HITRUST control reference — illustrative prototype compliance posture.",
-        "slug": "Security_Center",
-        "accent": "#ef4444",
-        "tag_bg": "rgba(239,68,68,0.10)",
-        "tag_border": "rgba(239,68,68,0.25)",
+        "desc": "RBAC access matrix, audit trail, BAA vendor tracker, breach cost model, and HITRUST control reference — illustrative prototype.",
+        "page": "pages/11_Security_Center.py",
+        "accent": "#ef4444", "tag_bg": "rgba(239,68,68,0.10)", "tag_border": "rgba(239,68,68,0.25)",
     },
     {
-        "icon": "⚖",
-        "name": "Payment Reconciliation Engine",
+        "icon": "⚖",  "name": "Payment Reconciliation Engine",
         "tag": "Finance Automation",
         "desc": "Auto-matches transactions, flags discrepancies, detects duplicates, predicts failed settlements, and generates a prioritized exception queue.",
-        "slug": "Reconciliation",
-        "accent": "#3b82f6",
-        "tag_bg": "rgba(59,130,246,0.10)",
-        "tag_border": "rgba(59,130,246,0.25)",
+        "page": "pages/12_Reconciliation.py",
+        "accent": "#3b82f6", "tag_bg": "rgba(59,130,246,0.10)", "tag_border": "rgba(59,130,246,0.25)",
     },
     {
-        "icon": "💳",
-        "name": "Payer Revenue Cycle",
+        "icon": "💳", "name": "Payer Revenue Cycle",
         "tag": "Revenue Integrity",
         "desc": "Claims management, denial analytics, first-pass rates, DSO by payer, A/R aging buckets, and net collection rate scorecard.",
-        "slug": "Payer_Revenue_Cycle",
-        "accent": "#8b5cf6",
-        "tag_bg": "rgba(139,92,246,0.10)",
-        "tag_border": "rgba(139,92,246,0.25)",
+        "page": "pages/13_Payer_Revenue_Cycle.py",
+        "accent": "#8b5cf6", "tag_bg": "rgba(139,92,246,0.10)", "tag_border": "rgba(139,92,246,0.25)",
     },
 ]
 
@@ -235,41 +196,38 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# ── 3×2 card grid ────────────────────────────────────────────────────────────
+# ── 3-column card grid ────────────────────────────────────────────────────────
 for row_start in range(0, len(TOOLS), 3):
     row_tools = TOOLS[row_start:row_start + 3]
     cols = st.columns(3, gap="medium")
     for col, t in zip(cols, row_tools):
-        url = f"/{t['slug']}"
-        accent_hex = t['accent']
-        # Build accent color with ~20% opacity for outline glow (hex -> inline rgba already available via tag_bg)
         with col:
+            # Visual card — no <a> wrapper; st.page_link() below handles navigation
+            # so session state (auth) is preserved across pages
             st.markdown(
-                f'<a href="{url}" style="text-decoration:none;display:block;">'
                 f'<div class="cv-card" style="background:{CARD};border:1px solid rgba(255,255,255,0.07);'
-                f'border-radius:14px;border-top:3px solid {accent_hex};padding:22px 22px 20px 22px;'
+                f'border-radius:14px 14px 0 0;border-top:3px solid {t["accent"]};'
+                f'padding:22px 22px 16px 22px;'
                 f'box-shadow:0 1px 3px rgba(0,0,0,0.5),0 0 0 1px {t["tag_bg"]};">'
                 f'<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;">'
                 f'<span style="font-size:32px;line-height:1;">{t["icon"]}</span>'
                 f'<span style="display:inline-flex;align-items:center;gap:5px;'
                 f'background:{t["tag_bg"]};border:1px solid {t["tag_border"]};'
-                f'color:{accent_hex};font-size:10px;font-weight:700;'
+                f'color:{t["accent"]};font-size:10px;font-weight:700;'
                 f'padding:3px 9px;border-radius:20px;white-space:nowrap;letter-spacing:0.3px;">'
-                f'<span style="width:4px;height:4px;border-radius:50%;background:{accent_hex};'
+                f'<span style="width:4px;height:4px;border-radius:50%;background:{t["accent"]};'
                 f'display:inline-block;"></span>{t["tag"]}</span>'
                 f'</div>'
                 f'<div style="font-size:15px;font-weight:700;color:#f1f5f9;'
                 f'letter-spacing:-0.2px;margin-bottom:8px;">{t["name"]}</div>'
-                f'<div style="font-size:13px;color:#64748b;line-height:1.6;margin-bottom:20px;'
-                f'min-height:52px;">{t["desc"]}</div>'
-                f'<div style="display:flex;align-items:center;justify-content:space-between;padding-top:12px;'
-                f'border-top:1px solid rgba(255,255,255,0.05);">'
-                f'<span style="font-size:12px;font-weight:600;color:{accent_hex};">Open dashboard</span>'
-                f'<span style="font-size:14px;font-weight:700;color:{accent_hex};">→</span>'
-                f'</div></div></a>',
-                unsafe_allow_html=True
+                f'<div style="font-size:13px;color:#64748b;line-height:1.6;min-height:52px;">'
+                f'{t["desc"]}</div>'
+                f'</div>',
+                unsafe_allow_html=True,
             )
-    st.markdown("<div style='height:14px'></div>", unsafe_allow_html=True)
+            # st.page_link preserves Streamlit session — no re-login on navigation
+            st.page_link(t["page"], label="Open dashboard →", use_container_width=True)
+    st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
 
 st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
 
