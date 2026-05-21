@@ -361,6 +361,7 @@ _NAV_TOOLS = [
     {"key": "nav",    "icon": "🧭", "name": "Navigator Ops",   "slug": "Navigator_Ops",     "page": "pages/10_Navigator_Ops.py"},
     {"key": "sec",    "icon": "🔒", "name": "Security Center", "slug": "Security_Center",   "page": "pages/11_Security_Center.py"},
     {"key": "recon",  "icon": "⚖",  "name": "Reconciliation",  "slug": "Reconciliation",    "page": "pages/12_Reconciliation.py"},
+    {"key": "payer",  "icon": "💳", "name": "Payer Rev Cycle", "slug": "Payer_Revenue_Cycle","page": "pages/13_Payer_Revenue_Cycle.py"},
 ]
 
 

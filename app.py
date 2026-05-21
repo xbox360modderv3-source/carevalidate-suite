@@ -141,6 +141,16 @@ TOOLS = [
         "tag_bg": "rgba(59,130,246,0.10)",
         "tag_border": "rgba(59,130,246,0.25)",
     },
+    {
+        "icon": "💳",
+        "name": "Payer Revenue Cycle",
+        "tag": "Revenue Integrity",
+        "desc": "Claims management, denial analytics, first-pass rates, DSO by payer, A/R aging buckets, and net collection rate scorecard.",
+        "slug": "Payer_Revenue_Cycle",
+        "accent": "#8b5cf6",
+        "tag_bg": "rgba(139,92,246,0.10)",
+        "tag_border": "rgba(139,92,246,0.25)",
+    },
 ]
 
 # ── Navigation bar ───────────────────────────────────────────────────────────
