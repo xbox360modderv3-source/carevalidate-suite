@@ -157,7 +157,7 @@ Next update: {(datetime.strptime(report_month, '%b %Y') + timedelta(days=32)).st
 — CareValidate Finance Team
 """
     st.text_area("Monthly investor update (copy → paste into email/Notion):", pack_text, height=480)
-    alert("This report is auto-generated from live dashboard data. Update the 'Prior month MRR' and 'Cash on hand' inputs above to reflect current actuals before sending.", level="info")
+    alert("This report is generated from the synthetic dashboard inputs above. In production, update inputs from your actual MRR and cash position before sending.", level="info")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
