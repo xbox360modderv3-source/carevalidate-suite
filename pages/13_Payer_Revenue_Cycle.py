@@ -89,9 +89,8 @@ sel_idx    = [i for i, m in enumerate(payer_mask) if m]
 
 # ── Header ─────────────────────────────────────────────────────────────────
 render_header(
-    "Payer Revenue Cycle",
+    "💳 Payer Revenue Cycle",
     "Claims management, denial tracking, A/R aging, and net collection rate by payer",
-    icon="💳",
 )
 
 # ── KPI Row ────────────────────────────────────────────────────────────────
