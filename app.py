@@ -1,6 +1,6 @@
 """
 CareValidate Finance Suite Hub
-Landing page — links to all 6 finance dashboards.
+Landing page — links to all 13 finance dashboards.
 Run: streamlit run app.py --server.port 8500
 """
 import sys
