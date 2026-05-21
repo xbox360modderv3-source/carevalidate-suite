@@ -146,27 +146,29 @@ for i in range(1, months_proj + 1):
     growth_rate = (yoy_growth / 12) * (1 - i/60)
     mrr_proj.append(mrr_proj[-1] * (1 + max(growth_rate, 0.02)))
 
-labels_hist = [f"M-{months_hist - i}" for i in range(months_hist)] + ["Now"]
-labels_proj = ["Now"] + [f"M+{i}" for i in range(1, months_proj + 1)]
+# Use integer x-axis (0 = Now) so add_vline works — categorical strings break Plotly on Python 3.14
+x_hist = list(range(-months_hist, 1))   # -18 … 0
+x_proj = list(range(0, months_proj + 1)) # 0 … 18
+tick_step = 3
+tickvals = list(range(-months_hist, months_proj + 1, tick_step))
+ticktext  = [("Now" if v == 0 else f"M{v:+d}") for v in tickvals]
 
 fig = make_subplots(rows=1, cols=1)
-fig.add_trace(go.Scatter(x=labels_hist, y=[m/1e3 for m in mrr_hist],
+fig.add_trace(go.Scatter(x=x_hist, y=[m/1e3 for m in mrr_hist],
     name="Historical MRR", mode="lines+markers",
     line=dict(color=BLUE, width=2.5), marker=dict(size=5)))
-fig.add_trace(go.Scatter(x=labels_proj, y=[m/1e3 for m in mrr_proj],
+fig.add_trace(go.Scatter(x=x_proj, y=[m/1e3 for m in mrr_proj],
     name="Projected MRR", mode="lines+markers",
     line=dict(color=GREEN, width=2, dash="dot"), marker=dict(size=5)))
-fig.add_shape(type="line", xref="x", yref="paper",
-              x0="Now", x1="Now", y0=0, y1=1,
-              line=dict(color=MUTED, dash="dash", width=1))
-fig.add_annotation(x="Now", yref="paper", y=1.05, text="Today",
-                   showarrow=False, font=dict(color=MUTED, size=11),
-                   xanchor="left")
+fig.add_vline(x=0, line_dash="dash", line_color=MUTED,
+              annotation_text="Today", annotation_font_color=MUTED,
+              annotation_position="top right")
 fig.update_layout(template="plotly_dark", paper_bgcolor=BG,
                   plot_bgcolor=CARD, yaxis_title="MRR ($K)",
                   height=300, margin=dict(l=0,r=0,t=10,b=0),
                   legend=dict(orientation="h", yanchor="bottom", y=1.02),
-                  xaxis=dict(gridcolor="rgba(255,255,255,0.04)"),
+                  xaxis=dict(gridcolor="rgba(255,255,255,0.04)",
+                             tickvals=tickvals, ticktext=ticktext),
                   yaxis=dict(gridcolor="rgba(255,255,255,0.04)"))
 st.plotly_chart(fig, use_container_width=True)
 
