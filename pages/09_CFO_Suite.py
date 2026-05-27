@@ -76,8 +76,18 @@ with tab0:
         "at_risk_arr_k":      156.5,
         "report_month":       "May 2026",
     }
-    _paras, _action_df, _dl_lines = build_commentary(_exec_metrics)
-    render_commentary_ui(_paras, _action_df, _dl_lines, report_month="May 2026")
+    _aud_col, _tone_col, _ = st.columns([1, 1, 2])
+    with _aud_col:
+        _audience = st.selectbox("Audience", ["Board", "Investors", "Finance Team"],
+                                 index=0, key="cfo_audience",
+                                 help="Adjusts framing and emphasis for the target reader")
+    with _tone_col:
+        _tone = st.selectbox("Tone", ["Executive", "Detailed"],
+                             index=0, key="cfo_tone",
+                             help="Executive = concise numbers-first · Detailed = full narrative")
+    _paras, _action_df, _dl_lines = build_commentary(_exec_metrics, audience=_audience, tone=_tone)
+    render_commentary_ui(_paras, _action_df, _dl_lines, report_month="May 2026",
+                         audience=_audience, tone=_tone)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # TAB 1 — MONTHLY CFO PACK GENERATOR

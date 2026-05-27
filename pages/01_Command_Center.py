@@ -193,9 +193,20 @@ _cmd_metrics = {
     "at_risk_arr_k":      156.5,
     "report_month":       _today.strftime("%B %Y"),
 }
-_cmd_paras, _cmd_action_df, _cmd_dl_lines = build_commentary(_cmd_metrics)
+_cmd_aud_col, _cmd_tone_col, _ = st.columns([1, 1, 2])
+with _cmd_aud_col:
+    _cmd_audience = st.selectbox("Audience", ["Board", "Investors", "Finance Team"],
+                                 index=0, key="cmd_audience",
+                                 help="Adjusts framing and emphasis for the target reader")
+with _cmd_tone_col:
+    _cmd_tone = st.selectbox("Tone", ["Executive", "Detailed"],
+                             index=0, key="cmd_tone",
+                             help="Executive = concise numbers-first · Detailed = full narrative")
+_cmd_paras, _cmd_action_df, _cmd_dl_lines = build_commentary(_cmd_metrics,
+                                                              audience=_cmd_audience, tone=_cmd_tone)
 render_commentary_ui(_cmd_paras, _cmd_action_df, _cmd_dl_lines,
-                     report_month=_today.strftime("%B %Y"))
+                     report_month=_today.strftime("%B %Y"),
+                     audience=_cmd_audience, tone=_cmd_tone)
 
 st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
 

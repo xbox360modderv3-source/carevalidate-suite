@@ -14,9 +14,12 @@ from carevalidate_shared.theme import (
 
 # ── Commentary builder ─────────────────────────────────────────────────────────
 
-def build_commentary(m: dict) -> tuple[dict, pd.DataFrame, list]:
+def build_commentary(m: dict, audience: str = "Board", tone: str = "Executive") -> tuple[dict, pd.DataFrame, list]:
     """
     Build CFO-style executive commentary and action queue.
+
+    audience: "Board" | "Investors" | "Finance Team"
+    tone:     "Executive" | "Detailed"
 
     m keys:
         mrr_current       float  — current MRR ($)
@@ -172,12 +175,80 @@ def build_commentary(m: dict) -> tuple[dict, pd.DataFrame, list]:
 
     action_para = "; ".join(a[0].upper() + a[1:] for a in actions) + "."
 
+    # ── Audience + tone transformations ───────────────────────────────────────
+    if tone == "Executive":
+        _rev_out = (
+            f"MRR {mrr_growth_pct:+.1f}% MoM to ${mrr/1e3:,.0f}K. "
+            f"NRR {nrr:.0%} — {'strong expansion' if nrr > 1.15 else 'stable retention'}."
+        )
+        _margin_out = (
+            f"Gross margin {gm:.1%} ({'+' if gm_delta_bps >= 0 else ''}{gm_delta_bps:.0f} bps). "
+            f"${gm*100:.0f}K gross profit per $100K MRR."
+        )
+        _cash_out = f"${cash_m:.1f}M cash · {runway:.0f}mo runway. {cash_action}"
+        _risk_out = (risks[0][0].upper() + risks[0][1:] + "." if risks
+                     else "No critical threshold breaches this period.")
+        _action_out = "; ".join(a[0].upper() + a[1:] for a in actions[:2]) + "."
+    else:  # Detailed
+        _rev_out    = rev_para
+        _margin_out = margin_para
+        _cash_out   = cash_para
+        _risk_out   = risk_para
+        _action_out = action_para
+
+    if audience == "Investors":
+        if tone == "Executive":
+            _rev_out = (
+                f"NRR {nrr:.0%} · MRR {mrr_growth_pct:+.1f}% to ${mrr/1e3:,.0f}K · "
+                f"LTV:CAC {ltv_cac:.1f}x · {payback}mo CAC payback."
+            )
+        else:
+            _rev_out = (
+                f"Growth efficiency highlight: NRR of {nrr:.0%} signals "
+                f"{'strong installed-base expansion' if nrr > 1.15 else 'steady retention'}. "
+                + rev_para +
+                f" CAC payback of {payback} months with LTV:CAC of {ltv_cac:.1f}x anchors the Series A unit economics narrative."
+            )
+        _cash_out = (
+            f"Series A context: {_cash_out}"
+            if tone == "Executive"
+            else f"Fundraising context: {_cash_out}"
+        )
+        _action_out = (
+            f"Investor-facing priorities: {_action_out}"
+        )
+
+    elif audience == "Board":
+        if tone == "Detailed":
+            _rev_out = rev_para + (
+                f" At current trajectory, the business is on pace to reach "
+                f"${mrr * 1.15 / 1e3:,.0f}K MRR within two months."
+                if mrr_growth_pct >= 8 else ""
+            )
+        _action_out = (
+            f"Board action items: {_action_out}"
+            if tone == "Executive"
+            else f"Recommended board actions: {_action_out}"
+        )
+
+    else:  # Finance Team
+        if tone == "Detailed":
+            _rev_out = rev_para + (
+                f" Monthly churn of {churn:.1%} equates to ~${churn * mrr / 1e3:,.0f}K "
+                f"in gross MRR at risk each period before new patient adds."
+            )
+            _action_out = action_para + (
+                f" DSO of {dso} days vs. 35-day benchmark — "
+                f"${(dso - 35) * mrr / 30 / 1e3:,.0f}K cash timing drag to recover."
+                if dso > 35 else ""
+            )
+
     paragraphs = {
-        "revenue": rev_para,
-        "margin":  margin_para,
-        "cash":    cash_para,
-        "risk":    risk_para,
-        "action":  action_para,
+        "revenue": _rev_out,
+        "margin":  _margin_out,
+        "cash":    _cash_out,
+        "risk":    _risk_out,
+        "action":  _action_out,
     }
 
     # ── Action Queue ───────────────────────────────────────────────────────
@@ -338,10 +409,12 @@ _PARA_CONFIG = {
 
 
 def render_commentary_ui(paragraphs: dict, action_df: pd.DataFrame, download_lines: list,
-                         report_month: str = "") -> None:
+                         report_month: str = "", audience: str = "Board", tone: str = "Executive") -> None:
     """Render the full executive commentary UI block in Streamlit."""
 
     month_label = report_month or date.today().strftime("%B %Y")
+    _audience_badge = {"Board": "#3b82f6", "Investors": "#8b5cf6", "Finance Team": "#10b981"}.get(audience, "#3b82f6")
+    _tone_label = "Concise" if tone == "Executive" else "Full narrative"
 
     # Header card
     st.markdown(
@@ -349,11 +422,19 @@ def render_commentary_ui(paragraphs: dict, action_df: pd.DataFrame, download_lin
         f'border:1px solid rgba(59,130,246,0.18);border-radius:12px;padding:16px 20px;margin-bottom:20px;">'
         f'<div style="display:flex;align-items:center;gap:10px;">'
         f'<span style="font-size:20px;">📝</span>'
-        f'<div>'
+        f'<div style="flex:1;">'
         f'<div style="font-size:14px;font-weight:700;color:#f1f5f9;">Executive Finance Commentary — {month_label}</div>'
         f'<div style="font-size:11px;color:#475569;margin-top:2px;">'
         f'Rules-based variance narrative · generated from synthetic dashboard data · not financial advice'
-        f'</div></div></div></div>',
+        f'</div></div>'
+        f'<div style="display:flex;gap:6px;flex-shrink:0;">'
+        f'<span style="background:{_audience_badge}22;border:1px solid {_audience_badge}44;'
+        f'color:{_audience_badge};font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;">'
+        f'{audience.upper()}</span>'
+        f'<span style="background:rgba(100,116,139,0.15);border:1px solid rgba(100,116,139,0.3);'
+        f'color:#94a3b8;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;">'
+        f'{_tone_label.upper()}</span>'
+        f'</div></div></div>',
         unsafe_allow_html=True,
     )
 
