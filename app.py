@@ -113,6 +113,13 @@ TOOLS = [
         "page": "pages/13_Payer_Revenue_Cycle.py",
         "accent": "#8b5cf6", "tag_bg": "rgba(139,92,246,0.10)", "tag_border": "rgba(139,92,246,0.25)",
     },
+    {
+        "icon": "📋", "name": "FP&A Dashboard",
+        "tag": "Financial Planning",
+        "desc": "Budget vs. actuals waterfall, rolling 12-month forecast, department headcount & burn model, and audience-adjustable variance commentary.",
+        "page": "pages/14_FPA_Dashboard.py",
+        "accent": "#10b981", "tag_bg": "rgba(16,185,129,0.10)", "tag_border": "rgba(16,185,129,0.25)",
+    },
 ]
 
 # ── Navigation bar ───────────────────────────────────────────────────────────
@@ -150,7 +157,7 @@ st.markdown(
     'background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.22);'
     'color:#3b82f6;font-size:11px;font-weight:700;padding:5px 16px;border-radius:20px;'
     'letter-spacing:0.8px;text-transform:uppercase;margin-bottom:24px;">'
-    'Finance Suite · 12 Dashboards</div>'
+    'Finance Suite · 13 Dashboards</div>'
     '<div style="font-size:52px;font-weight:800;letter-spacing:-2.5px;color:#f8fafc;'
     'line-height:1.05;margin-bottom:18px;">'
     'Financial Intelligence<br>'
@@ -165,7 +172,7 @@ st.markdown(
 
 # ── Stats strip ───────────────────────────────────────────────────────────────
 stats = [
-    ("12", "Live Dashboards", BLUE, "rgba(59,130,246,0.3)"),
+    ("13", "Live Dashboards", BLUE, "rgba(59,130,246,0.3)"),
     ("850+", "Synthetic Patients", GREEN, "rgba(16,185,129,0.3)"),
     ("1M", "HealthJoy Lives Modeled", PURPLE, "rgba(139,92,246,0.3)"),
     ("Real Benchmarks", "KFF · ADA · NEJM · Omada S-1", YELLOW, "rgba(245,158,11,0.3)"),
